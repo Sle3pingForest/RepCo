@@ -8,14 +8,17 @@ import modele.joueur.Joueur;
 public class EtatP4 extends Etat {
 	
 	protected Joueur jcourant;
+	protected int[][] plateau;
 
 	public EtatP4(Jeu j) {
 		super(j);
+		this.plateau = j.getPlateau();
 	}
 	
 	public EtatP4(Jeu j, Joueur jc) {
 		super(j);
 		this.jcourant = jc;
+		this.plateau = j.getPlateau();
 	}
 
 	@Override
@@ -60,7 +63,12 @@ public class EtatP4 extends Etat {
 
 	@Override
 	public void affichage() {
-		
+		for (int i = 0; i < plateau.length; i++) {
+			for (int j = 0; j < plateau[0].length; j++) {
+				System.out.print(plateau[i][j]);
+			}
+			System.out.println("");
+		}
 	}
 
 	@Override
