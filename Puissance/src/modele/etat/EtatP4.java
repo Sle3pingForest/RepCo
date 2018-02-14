@@ -6,7 +6,7 @@ import modele.jeu.Jeu;
 import modele.joueur.Joueur;
 
 public class EtatP4 extends Etat {
-	
+
 	protected Joueur jcourant;
 	protected int[][] plateau;
 
@@ -14,7 +14,7 @@ public class EtatP4 extends Etat {
 		super(j);
 		this.plateau = j.getPlateau();
 	}
-	
+
 	public EtatP4(Jeu j, Joueur jc) {
 		super(j);
 		this.jcourant = jc;
@@ -23,17 +23,17 @@ public class EtatP4 extends Etat {
 
 	@Override
 	public boolean finJeu() {
-		
+
 		boolean fin = false;
 		if (!this.rempli()) {
-			
-			
+
+
 		} else {
 			fin = true;
 		}
 		return fin;
 	}
-	
+
 	public boolean rempli() {
 		boolean rempli = false;
 		int colonne = this.jeu.getPlateau().length;
@@ -53,12 +53,42 @@ public class EtatP4 extends Etat {
 
 	@Override
 	public void ecrire(Etat e) {
-		
+
 	}
 
 	@Override
 	public boolean egalite(Etat e) {
-		return false;
+		boolean egal = true;
+		
+		egal = this.jcourant == ((EtatP4) e).getJcourant();
+		if ( egal) {
+			boolean verif = true;
+			int [][] p = this.jeu.getPlateau(), p2 = e.jeu.getPlateau();
+			int compt = 0,i =1, j = 0, colonne = p.length;
+			int ligne = p[0].length;
+			verif = p == p2;
+			while ( compt < ligne*colonne && verif) {
+				
+				verif = p[i-1][j] == p2[i-1][j];
+				if (j == p[0].length -1 ) i++;
+				
+				// regarde si on est à la fin de la ligne
+				if (j == p[0].length - 1 ) j = 0;
+				else j++;
+				compt++;
+			}
+			egal = verif;
+		}
+
+		return egal;
+	}
+
+	public Joueur getJcourant() {
+		return jcourant;
+	}
+
+	public void setJcourant(Joueur jcourant) {
+		this.jcourant = jcourant;
 	}
 
 	@Override
