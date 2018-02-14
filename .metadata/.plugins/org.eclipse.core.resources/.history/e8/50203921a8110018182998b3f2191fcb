@@ -91,12 +91,16 @@ public class EtatP4 extends Etat {
 
 	@Override
 	public void affichage() {
+<<<<<<< HEAD
+
+=======
 		for (int i = 0; i < plateau.length; i++) {
 			for (int j = 0; j < plateau[0].length; j++) {
 				System.out.print(plateau[i][j]);
 			}
 			System.out.println("");
 		}
+>>>>>>> 154ed9d6b722ebd36a0058c51649b428acd41648
 	}
 
 	@Override
