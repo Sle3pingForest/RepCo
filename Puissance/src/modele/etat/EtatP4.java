@@ -59,21 +59,23 @@ public class EtatP4 extends Etat {
 	@Override
 	public boolean egalite(Etat e) {
 		boolean egal = true;
-
+		
 		egal = this.jcourant == ((EtatP4) e).getJcourant();
 		if ( egal) {
 			boolean verif = true;
 			int [][] p = this.jeu.getPlateau(), p2 = e.jeu.getPlateau();
 			int compt = 0,i =1, j = 0, colonne = p.length;
-			int ligne = colonne = p[0].length;
+			int ligne = p[0].length;
 			verif = p == p2;
 			while ( compt < ligne*colonne && verif) {
-				verif = p[i][j] == p2[i][j];
+				
+				verif = p[i-1][j] == p2[i-1][j];
 				if (j == p[0].length -1 ) i++;
 				
 				// regarde si on est à la fin de la ligne
 				if (j == p[0].length - 1 ) j = 0;
 				else j++;
+				compt++;
 			}
 			egal = verif;
 		}
