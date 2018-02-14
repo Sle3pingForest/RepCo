@@ -63,9 +63,10 @@ public class EtatP4 extends Etat {
 
 	@Override
 	public void affichage() {
+		System.out.println("Joueur 1: " + this.jeu.getJ1().getNom() +" ******* Joueur 2: " + this.jeu.getJ2().getNom() );
 		for (int i = 0; i < plateau.length; i++) {
 			for (int j = 0; j < plateau[0].length; j++) {
-				System.out.print(plateau[i][j]);
+				System.out.print(plateau[i][j] + "\t");
 			}
 			System.out.println("");
 		}
