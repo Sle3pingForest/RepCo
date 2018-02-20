@@ -60,6 +60,10 @@ public class Jeu {
 		this.plateau = plateau;
 	}
 	
+	public void setValue(int i , int j){
+		this.plateau[i][j] = 1;
+	}
+	
 	
 
 }

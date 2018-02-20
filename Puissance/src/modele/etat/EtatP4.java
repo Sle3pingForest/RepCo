@@ -20,6 +20,11 @@ public class EtatP4 extends Etat {
 		this.jcourant = jc;
 		this.plateau = j.getPlateau();
 	}
+	
+	public EtatP4(Jeu j,int [][] tab){
+		super(j);
+		this.plateau = tab;
+	}
 
 	@Override
 	public boolean finJeu() {
@@ -103,8 +108,48 @@ public class EtatP4 extends Etat {
 	}
 
 	@Override
-	public ArrayList<Etat> successeur() {
-		return null;
+	public ArrayList<Etat> successeur(Etat e) {
+		ArrayList<Etat> listeSuc = new ArrayList<>();
+		int [][] tab = e.getJeu().getPlateau();
+		int colonne = tab[0].length;
+		int ligne = tab.length;
+		for(int i = 0 ; i < colonne;++i){
+			int j = 1;
+			boolean jouer = false;
+			int [][] tabSuc = new int[ligne][colonne];
+			copyValeurTableau(tabSuc);
+			while( j <= ligne && !jouer){
+				if(tab[ligne - j][i] == 1){
+					tabSuc[ligne - j - 1][i] = 1;
+					tabSuc[ligne - j][i] = tab[ligne - j][i];
+					jouer = true;
+				}
+				if(tab[ligne - j][i] == 0){
+					tabSuc[ligne - j][i] = 1;
+					jouer = true;
+				}
+		
+				EtatP4 etatSuc = new EtatP4(this.jeu, tabSuc);
+				listeSuc.add(etatSuc);
+				j++;
+			}
+		}
+		return listeSuc;
+	}
+
+	
+	public void copyValeurTableau(int [][] tab){
+		for (int i = 0; i < tab[0].length; ++i){
+			for(int j = 0 ; j < tab.length;++j){
+				tab[j][i] = this.plateau[j][i];
+			}
+		}
+	}
+	
+	
+	@Override
+	public Jeu getJeu() {
+		return this.jeu;
 	}
 
 }

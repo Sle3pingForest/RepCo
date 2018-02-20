@@ -16,7 +16,8 @@ public abstract class Etat {
 	public abstract void ecrire(Etat e);
 	public abstract boolean egalite(Etat e);
 	public abstract void affichage();
-	public abstract ArrayList<Etat> successeur();
+	public abstract Jeu getJeu();
+	public abstract ArrayList<Etat> successeur(Etat e);
 
 
 }
