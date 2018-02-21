@@ -43,11 +43,9 @@ public class Jeu {
 	}
 
 
-
 	public void setJ2(Joueur j2) {
 		this.j2 = j2;
 	}
-
 
 
 	public int[][] getPlateau() {
@@ -55,15 +53,9 @@ public class Jeu {
 	}
 
 
-
 	public void setPlateau(int[][] plateau) {
 		this.plateau = plateau;
 	}
-	
-	public void setValue(int i , int j){
-		this.plateau[i][j] = 1;
-	}
-	
 	
 
 }

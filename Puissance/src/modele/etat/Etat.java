@@ -3,6 +3,7 @@ package modele.etat;
 import java.util.ArrayList;
 
 import modele.jeu.Jeu;
+import modele.joueur.Joueur;
 
 public abstract class Etat {
 	protected Jeu jeu;
@@ -17,7 +18,8 @@ public abstract class Etat {
 	public abstract boolean egalite(Etat e);
 	public abstract void affichage();
 	public abstract Jeu getJeu();
-	public abstract ArrayList<Etat> successeur(Etat e);
+	public abstract void poserJetton(Joueur j);
+	public abstract void setJcourant(Joueur jcourant);
 
 
 }

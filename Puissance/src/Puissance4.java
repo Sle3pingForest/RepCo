@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import modele.etat.Etat;
 import modele.etat.EtatP4;
 import modele.jeu.Jeu;
+import modele.joueur.Joueur;
 
 
 public class Puissance4 {
@@ -13,16 +14,37 @@ public class Puissance4 {
 	public void start(){
 
 		Jeu j = new Jeu("nam", "andre");
+		System.out.println("Joueur 1: " + j.getJ1().getNom() +" ******* Joueur 2: " + j.getJ2().getNom() );
 		j.setInitial();
-		Etat einit = new EtatP4(j);
-		j.setValue(5,1);
-		einit.affichage();
-
-		EtatP4 etatSuc = new EtatP4(j);
-		ArrayList<Etat> listetatSuc = etatSuc.successeur(einit);
-		for( Etat e : listetatSuc){
+		EtatP4 e = new EtatP4(j, j.getJ1());
+		e.affichage();
+		/*e.poserJetton(j.getJ1());
+		e.affichage();
+		e.poserJetton(j.getJ2());
+		e.affichage();*/
+		
+		boolean estRemplie = e.rempli();
+		while(!estRemplie){
+			e.poserJetton(j.getJ1());
 			e.affichage();
+			e.poserJetton(j.getJ2());
+			e.affichage();
+			if(j.getJ1().getNbCoupJoue() + j.getJ2().getNbCoupJoue() == 42){
+				estRemplie = true;
+			}
+			
 		}
+		System.out.println("end game");
+		
+		
+		
+/*
+		
+		ArrayList<EtatP4> listetatSuc = e.successeur();
+		for( EtatP4 et : listetatSuc){
+			System.out.println("Joueur 1: " + j.getJ1().getNom() +" ******* Joueur 2: " + j.getJ2().getNom() );
+			et.affichage();
+		}*/
 		
 		/*
 		EtatP4 e = new EtatP4(j, j.getJ1());
