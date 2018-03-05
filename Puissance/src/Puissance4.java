@@ -18,19 +18,16 @@ public class Puissance4 {
 		j.setInitial();
 		EtatP4 e = new EtatP4(j, j.getJ1());
 		e.affichage();
-		/*e.poserJetton(j.getJ1());
-		e.affichage();
-		e.poserJetton(j.getJ2());
-		e.affichage();*/
 		
 		boolean estRemplie = e.rempli();
 		while(!estRemplie){
-			e.poserJetton(j.getJ1());
+			e.poserJetton(j.getJ1(), j);
 			e.affichage();
-			e.poserJetton(j.getJ2());
+			e.poserJetton(j.getJ2(),j);
 			e.affichage();
 			if(j.getJ1().getNbCoupJoue() + j.getJ2().getNbCoupJoue() == 42){
 				estRemplie = true;
+				System.out.println("end");
 			}
 			
 		}

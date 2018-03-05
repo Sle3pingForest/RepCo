@@ -18,7 +18,7 @@ public abstract class Etat {
 	public abstract boolean egalite(Etat e);
 	public abstract void affichage();
 	public abstract Jeu getJeu();
-	public abstract void poserJetton(Joueur j);
+	public abstract void poserJetton(Joueur j, Jeu jeu);
 	public abstract void setJcourant(Joueur jcourant);
 
 

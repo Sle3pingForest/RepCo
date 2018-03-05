@@ -99,7 +99,7 @@ public class EtatP4 extends Etat {
 
 	@Override
 	public void affichage() {
-		for (int i = 0; i < plateau.length; i++) {
+		for (int i = plateau.length -1; i >=0 ; i--) {
 			for (int j = 0; j < plateau[0].length; j++) {
 				System.out.print(plateau[i][j] + "\t");
 			}
@@ -108,28 +108,22 @@ public class EtatP4 extends Etat {
 	}
 
 
-	public ArrayList<EtatP4> successeur() {
+	public ArrayList<EtatP4> successeur(EtatP4 etat) {
 		ArrayList<EtatP4> listeSuc = new ArrayList<>();
 		int colonne = this.plateau[0].length;
 		int ligne = this.plateau.length;
 		for(int i = 0 ; i < colonne;++i){
-			int j = 1;
-			boolean jouer = false;
+			int j = 0;
+			boolean estPossible = false;
 			int [][] tabSuc = new int[ligne][colonne];
-			copyValeurTableau(tabSuc);
-			while( j <= ligne && !jouer){
-				if(this.plateau[ligne - j][i] == 1){
-					tabSuc[ligne - j - 1][i] = 1;
-					tabSuc[ligne - j][i] = this.plateau[ligne - j][i];
-					jouer = true;
+			copyValeurTableau(tabSuc, etat.getPlateau());
+			while( j < ligne && !estPossible){
+				if(etat.getPlateau()[j][i] == 0){
+					tabSuc[j][i] = 1;
+					EtatP4 etatSuc = new EtatP4(this.jeu, tabSuc);
+					listeSuc.add(etatSuc);
+					estPossible = true;
 				}
-				if(this.plateau[ligne - j][i] == 0){
-					tabSuc[ligne - j][i] = 1;
-					jouer = true;
-				}
-		
-				EtatP4 etatSuc = new EtatP4(this.jeu, tabSuc);
-				listeSuc.add(etatSuc);
 				j++;
 			}
 		}
@@ -142,10 +136,10 @@ public class EtatP4 extends Etat {
 	}
 	
 	
-	public void copyValeurTableau(int[][] tab){
-		for (int i = 0; i < plateau[0].length; ++i){
-			for(int j = 0 ;j < plateau.length;++j){
-				tab[j][i] = this.plateau[j][i];
+	public void copyValeurTableau(int[][] tab, int [][] tabRef){
+		for (int i = 0; i < tabRef[0].length; ++i){
+			for(int j = 0 ;j < tabRef.length;++j){
+				tab[j][i] = tabRef[j][i];
 			}
 		}
 	}
@@ -156,42 +150,55 @@ public class EtatP4 extends Etat {
 		return this.jeu;
 	}
 	
-	public void setValue(int i , int j){
-		this.plateau[i][j] = 1;
+	public void setValue(int i , int j, Joueur joueur){
+		if(joueur.getNom().equals(this.jeu.getJ1().getNom().toString())){
+			this.plateau[i][j] = 2;
+		}
+
+		if(joueur.getNom().equals(this.jeu.getJ2().getNom().toString())){
+			this.plateau[i][j] = 1;
+		}
+		
 	}
 	
 
 	@Override
-	public void poserJetton(Joueur j){
+	public void poserJetton(Joueur j, Jeu jeu){
 
 		boolean estJouer = false;
-		while(!estJouer){
+		boolean valide = false;
+		while(!valide){		
 			Scanner sc = new Scanner(System.in);
 			int indiceColone = sc.nextInt();
 			int k = 0;
-			while( k < this.plateau.length && !estJouer){
-				if(plateau[k][indiceColone] == 1){
-					setValue(k + 1,indiceColone);
+			if(0 < indiceColone && indiceColone < 8 ){
+				indiceColone = indiceColone - 1;
+				valide = true;
+			}
+			while( k < this.plateau.length-1 && !estJouer && valide){
+				
+				if(plateau[k][indiceColone] == 1 & plateau[k + 1][indiceColone] == 0){
+					setValue(k + 1,indiceColone,j);
 					j.setNbCoupJoue(1);
 					estJouer = true;
 					System.out.println(j.getNom() + " a joue!!!");
 					setJcourant(j);
 				}
-				if(plateau[k][indiceColone] == 0 && j.getNbCoupJoue() == 0){
-					setValue(k,indiceColone);
+				if(plateau[k][indiceColone] == 0){
+					setValue(k,indiceColone,j);
 					j.setNbCoupJoue(1);
 					estJouer = true;
 					System.out.println(j.getNom() + " a joue!!!");
 					setJcourant(j);
 				}
-				//EtatP4 ep4= new EtatP4(jeu, plateau);
 				k++;
 			}
 		}
+		
 	}
 	
 
-	
+	/*
 	public boolean verifierEtat(EtatP4 e){
 		boolean idem = true;
 		int k = 0;
@@ -211,5 +218,5 @@ public class EtatP4 extends Etat {
 		}
 		return idem;
 	}
-
+*/
 }
