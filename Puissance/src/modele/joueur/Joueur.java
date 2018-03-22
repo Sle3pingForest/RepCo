@@ -18,6 +18,10 @@ public abstract class Joueur {
 	public void setNbCoupJoue(int nbCoupJoue) {
 		this.nbCoupJoue = nbCoupJoue;
 	}
+	
+	public void augmenterCoup() {
+		this.nbCoupJoue ++;
+	}
 
 
 	public String getNom() {

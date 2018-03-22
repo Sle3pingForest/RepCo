@@ -12,5 +12,4 @@ public class JoueurP4 extends Joueur {
 	
 	
 	
-
 }
