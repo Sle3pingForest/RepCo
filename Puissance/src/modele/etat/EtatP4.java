@@ -185,16 +185,21 @@ public class EtatP4 extends Etat {
 				
 				if(plateau[k][indiceColone] == 1 & plateau[k + 1][indiceColone] == 0){
 					setValue(k + 1,indiceColone,j);
+					Pion p = new Pion(k+1, indiceColone);
 					j.setNbCoupJoue(1);
 					estJouer = true;
 					System.out.println(j.getNom() + " a joue!!!");
+					((JoueurP4)j).ajouterPion(p);
 					setJcourant(j);
+					
 				}
 				if(plateau[k][indiceColone] == 0){
 					setValue(k,indiceColone,j);
+					Pion p = new Pion(k, indiceColone);
 					j.setNbCoupJoue(1);
 					estJouer = true;
 					System.out.println(j.getNom() + " a joue!!!");
+					((JoueurP4)j).ajouterPion(p);
 					setJcourant(j);
 				}
 				k++;

@@ -16,5 +16,9 @@ public class Pion {
 	public int getPosY() {
 		return posy;
 	}
+	
+	public String toString(){
+		return this.posx + "," + this.posy;
+	}
 
 }

@@ -4,6 +4,7 @@ import modele.etat.Etat;
 import modele.etat.EtatP4;
 import modele.jeu.Jeu;
 import modele.joueur.Joueur;
+import modele.joueur.JoueurP4;
 
 
 public class Puissance4 {
@@ -23,8 +24,16 @@ public class Puissance4 {
 		while(!estRemplie){
 			e.poserJetton(j.getJ1(), j);
 			e.affichage();
+			Joueur i = j.getJ1();
+			Joueur i2 = j.getJ2();
+			for(int k = 0; k < ((JoueurP4)i).getLp().size();++k){
+				System.out.println("Pion "+k +"("+ ((JoueurP4)i).getLp().get(k) +")") ;
+			}
 			e.poserJetton(j.getJ2(),j);
 			e.affichage();
+			for(int k = 0; k < ((JoueurP4)i).getLp().size();++k){
+				System.out.println("Pion "+k +"("+ ((JoueurP4)i2).getLp().get(k) +")") ;
+			}
 			if(j.getJ1().getNbCoupJoue() + j.getJ2().getNbCoupJoue() == 42){
 				estRemplie = true;
 				System.out.println("end");

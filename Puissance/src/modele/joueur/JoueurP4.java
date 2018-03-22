@@ -6,15 +6,15 @@ import modele.jeu.Pion;
 
 public class JoueurP4 extends Joueur {
 	
-	ArrayList<Pion> lp;
+	protected ArrayList<Pion> lp;
 
 	public JoueurP4(String j1) {
 		super(j1);
-		lp = new ArrayList<Pion>();
+		this.lp = new ArrayList<Pion>();
 	}
 
 	public ArrayList<Pion> getLp() {
-		return lp;
+		return this.lp;
 	}
 
 	public void setLp(ArrayList<Pion> lp) {
@@ -22,8 +22,10 @@ public class JoueurP4 extends Joueur {
 	}
 	
 	
+	public void ajouterPion(Pion p){
+		this.lp.add(p);
+	}
+	
+	
 
-	
-	
-	
 }

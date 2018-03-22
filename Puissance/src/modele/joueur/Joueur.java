@@ -1,9 +1,13 @@
 package modele.joueur;
 
+import java.util.ArrayList;
+
+import modele.jeu.Pion;
+
 public abstract class Joueur {
 	
 	protected String nom;
-	protected int nbCoupJoue;
+	protected int nbCoupJoue;	
 	
 	public Joueur(String j) {
 		this.nom = j;
@@ -32,5 +36,6 @@ public abstract class Joueur {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
+
 
 }
