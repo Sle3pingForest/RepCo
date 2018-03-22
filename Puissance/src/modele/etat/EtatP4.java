@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import modele.jeu.Jeu;
+import modele.jeu.Pion;
 import modele.joueur.Joueur;
+import modele.joueur.JoueurP4;
 
 public class EtatP4 extends Etat {
 
@@ -200,6 +202,151 @@ public class EtatP4 extends Etat {
 		}
 		
 	}
+
+	
+	/*
+	 * Parcours la liste de pion joué/placé
+	 * et compte le nombre de coup gagnant qu'il peut faire pour chaque
+	 * (non-Javadoc)
+	 * @see modele.etat.Etat#eval0()
+	 */
+	@Override
+	public int eval0() {
+		// TODO Auto-generated method stub
+		
+		int coupGagnant = 0;
+		
+		for (Pion p : ((JoueurP4) jcourant).getLp()) {
+			
+		}
+		
+		
+		return 0;
+	}
+	
+	
+	public int coupLigne(Pion p) {
+		
+		// verif quel joueur est en train de jouer et on atribue le joueur opposant
+		int joueur;
+		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
+		else joueur = 2;
+		
+		// nb de coup gagnant en ligne par rapport à un pion
+		int nb = 0;
+		
+		// borne correspondant soit aux limite de tableau
+		int borneGauche = 0, borneDroite = 7;
+		
+		if (p.getPosX() - 3 >= 0) borneGauche = p.getPosX()-3; 
+		if (p.getPosX() + 3 < plateau.length) borneDroite = p.getPosX()+3; 
+		
+		for (int i = borneGauche; i <= borneDroite - 3; i++) {
+			boolean ligneGagnante = true;
+			
+			for (int j = i; j < i+4; j++) {
+				// on regarde si c'est un pion adverse 
+				if ( plateau[i][p.getPosY()] != joueur) ligneGagnante = false;
+			}
+			if (ligneGagnante) nb++;
+		}
+		
+		return nb;
+	}
+	
+	public int coupColonne(Pion p) {
+		
+		// verif quel joueur est en train de jouer et on atribue le joueur opposant
+		int joueur;
+		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
+		else joueur = 2;
+		
+		// nb de coup gagnant en ligne par rapport à un pion
+		int nb = 0;
+		
+		// borne correspondant soit aux limite de tableau
+		int borneGauche = 0, borneDroite = 6;
+		
+		if (p.getPosY() - 3 >= 0) borneGauche = p.getPosY()-3; 
+		if (p.getPosY() + 3 < plateau[0].length) borneDroite = p.getPosY()+3; 
+		
+		for (int i = borneGauche; i <= borneDroite - 3; i++) {
+			boolean ligneGagnante = true;
+			
+			for (int j = i; j < i+4; j++) {
+				// on regarde si c'est un pion adverse 
+				if ( plateau[p.getPosX()][j] != joueur) ligneGagnante = false;
+			}
+			if (ligneGagnante) nb++;
+		}
+		
+		return nb;
+	}
+	
+	
+	/*
+	 * Diagonale qui part du haut a gauche et qui finit en bas a droite
+	 */
+	public int coupDiagonaleHGBD(Pion p) {
+		
+		// verif quel joueur est en train de jouer et on atribue le joueur opposant
+		int joueur;
+		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
+		else joueur = 2;
+		
+		// nb de coup gagnant en ligne par rapport à un pion
+		int nb = 0;
+		
+		// borne correspondant soit aux limite de tableau
+		int borneGaucheX, borneGaucheY, borneDroiteX, borneDroiteY;
+		
+		
+		// calcul borne diago gauche
+		if ( p.getPosX()-3 >= 0  && p.getPosY() + 3 < plateau[0].length) {
+			borneGaucheX = p.getPosX() - 3;
+			borneGaucheY = p.getPosY() + 3;
+		} else {
+			int min = Math.min( p.getPosX() , plateau[0].length-1 - p.getPosY());
+			
+			borneGaucheX = p.getPosX() - min;
+			borneGaucheY = p.getPosY() + min;
+		}
+		
+		
+		
+		// calcul borne diago droite 
+		if ( p.getPosY()-3 >= 0  && p.getPosX() + 3 < plateau.length) {
+			borneGaucheX = p.getPosX() + 3;
+			borneGaucheY = p.getPosY() - 3;
+		} else {
+			
+			// pas fini
+			int min = Math.min( p.getPosX() , plateau[0].length-1 - p.getPosY());
+			
+			borneGaucheX = p.getPosX() - min;
+			borneGaucheY = p.getPosY() + min;
+		}
+		
+		
+		
+		// EN CONSTRUCTION 
+		/*
+		if (p.getPosY() - 3 > 0) borneGauche = p.getPosY()-3; 
+		if (p.getPosY() + 3 > 0) borneDroite = p.getPosY()+3; 
+		
+		for (int i = borneGauche; i <= borneDroite - 3; i++) {
+			boolean ligneGagnante = true;
+			
+			for (int j = i; j < i+4; j++) {
+				// on regarde si c'est un pion adverse 
+				if ( plateau[p.getPosX()][j] != joueur) ligneGagnante = false;
+			}
+			if (ligneGagnante) nb++;
+		}
+		*/
+		return nb;
+	}
+	
 	
 
 	/*
