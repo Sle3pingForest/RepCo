@@ -103,6 +103,8 @@ public class EtatP4 extends Etat {
 
 	@Override
 	public ArrayList<Etat> successeur() {
+		
+		
 		return null;
 	}
 
