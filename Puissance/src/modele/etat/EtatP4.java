@@ -251,7 +251,7 @@ public class EtatP4 extends Etat {
 			
 			for (int j = i; j < i+4; j++) {
 				// on regarde si c'est un pion adverse 
-				if ( plateau[i][p.getPosY()] != joueur) ligneGagnante = false;
+				if ( plateau[i][p.getPosY()] == joueur) ligneGagnante = false;
 			}
 			if (ligneGagnante) nb++;
 		}
@@ -280,7 +280,7 @@ public class EtatP4 extends Etat {
 			
 			for (int j = i; j < i+4; j++) {
 				// on regarde si c'est un pion adverse 
-				if ( plateau[p.getPosX()][j] != joueur) ligneGagnante = false;
+				if ( plateau[p.getPosX()][j] == joueur) ligneGagnante = false;
 			}
 			if (ligneGagnante) nb++;
 		}
@@ -311,7 +311,7 @@ public class EtatP4 extends Etat {
 			borneGaucheX = p.getPosX() - 3;
 			borneGaucheY = p.getPosY() + 3;
 		} else {
-			int min = Math.min( p.getPosX() , plateau[0].length-1 - p.getPosY());
+			int min = Math.min( p.getPosX() , plateau[0].length - 1 - p.getPosY());
 			
 			borneGaucheX = p.getPosX() - min;
 			borneGaucheY = p.getPosY() + min;
@@ -321,38 +321,91 @@ public class EtatP4 extends Etat {
 		
 		// calcul borne diago droite 
 		if ( p.getPosY()-3 >= 0  && p.getPosX() + 3 < plateau.length) {
-			borneGaucheX = p.getPosX() + 3;
-			borneGaucheY = p.getPosY() - 3;
+			borneDroiteX = p.getPosX() + 3;
+			borneDroiteY = p.getPosY() - 3;
 		} else {
 			
 			// pas fini
-			int min = Math.min( p.getPosX() , plateau[0].length-1 - p.getPosY());
+			int min = Math.min( plateau.length - 1 - p.getPosX()  , p.getPosY());
 			
-			borneGaucheX = p.getPosX() - min;
-			borneGaucheY = p.getPosY() + min;
+			borneDroiteX = p.getPosX() + min;
+			borneDroiteY = p.getPosY() - min;
 		}
 		
+		// longueur de la diagonale
+		int distance = borneDroiteX - borneGaucheX; 
+		
+		boolean ligneGagnante = true;
 		
 		
-		// EN CONSTRUCTION 
-		/*
-		if (p.getPosY() - 3 > 0) borneGauche = p.getPosY()-3; 
-		if (p.getPosY() + 3 > 0) borneDroite = p.getPosY()+3; 
-		
-		for (int i = borneGauche; i <= borneDroite - 3; i++) {
-			boolean ligneGagnante = true;
+		for (int i = 0; i <= distance; i++) {
+			ligneGagnante = true;
 			
-			for (int j = i; j < i+4; j++) {
-				// on regarde si c'est un pion adverse 
-				if ( plateau[p.getPosX()][j] != joueur) ligneGagnante = false;
-			}
+			if ( plateau[borneGaucheX + i][ borneGaucheY - i] == joueur) ligneGagnante = false;
+			
 			if (ligneGagnante) nb++;
 		}
-		*/
+		
 		return nb;
 	}
 	
-	
+	/*
+	 * Diagonale qui part du bas a gauche et qui finit en haut a droite
+	 */
+	public int coupDiagonaleBGHD(Pion p) {
+		
+		// verif quel joueur est en train de jouer et on atribue le joueur opposant
+		int joueur;
+		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
+		else joueur = 2;
+		
+		// nb de coup gagnant en ligne par rapport à un pion
+		int nb = 0;
+		
+		// borne correspondant soit aux limite de tableau
+		int borneGaucheX, borneGaucheY, borneDroiteX, borneDroiteY;
+		
+		
+		// calcul borne diago gauche
+		if ( p.getPosX()-3 >= 0  && p.getPosY() - 3 >= 0) {
+			borneGaucheX = p.getPosX() - 3;
+			borneGaucheY = p.getPosY() - 3;
+		} else {
+			int min = Math.min( p.getPosX() , p.getPosY());
+			
+			borneGaucheX = p.getPosX() - min;
+			borneGaucheY = p.getPosY() - min;
+		}
+		
+		
+		// calcul borne diago droite 
+		if ( p.getPosY()+3 < plateau[0].length  && p.getPosX() + 3 < plateau.length) {
+			borneDroiteX = p.getPosX() + 3;
+			borneDroiteY = p.getPosY() + 3;
+		} else {
+			
+			int min = Math.min( plateau.length - 1 - p.getPosX() , plateau[0].length - 1 - p.getPosY() );
+			
+			borneDroiteX = p.getPosX() + min;
+			borneDroiteY = p.getPosY() + min;
+		}
+		
+		// longueur de la diagonale
+		int distance = borneDroiteX - borneGaucheX; 
+		
+		boolean ligneGagnante = true;
+		
+		
+		for (int i = 0; i <= distance; i++) {
+			ligneGagnante = true;
+			
+			if ( plateau[borneGaucheX + i][ borneGaucheY + i] == joueur) ligneGagnante = false;
+			
+			if (ligneGagnante) nb++;
+		}
+		
+		return nb;
+	}
 
 	/*
 	public boolean verifierEtat(EtatP4 e){
