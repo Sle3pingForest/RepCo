@@ -191,7 +191,7 @@ public class EtatP4 extends Etat {
 					System.out.println(j.getNom() + " a joue!!!");
 					((JoueurP4)j).ajouterPion(p);
 					setJcourant(j);
-					
+					eval0();
 				}
 				if(plateau[k][indiceColone] == 0){
 					setValue(k,indiceColone,j);
@@ -201,6 +201,7 @@ public class EtatP4 extends Etat {
 					System.out.println(j.getNom() + " a joue!!!");
 					((JoueurP4)j).ajouterPion(p);
 					setJcourant(j);
+					eval0();
 				}
 				k++;
 			}
@@ -222,11 +223,14 @@ public class EtatP4 extends Etat {
 		int coupGagnant = 0;
 		
 		for (Pion p : ((JoueurP4) jcourant).getLp()) {
-			
+			coupGagnant += coupLigne(p);
+			coupGagnant += coupColonne(p);
+			coupGagnant += coupDiagonaleBGHD(p);
+			coupGagnant += coupDiagonaleHGBD(p);
+			System.out.println("Pour ce pion " + p.toString() + "  nombre de coup gagnant " + coupGagnant);
 		}
 		
-		
-		return 0;
+		return coupGagnant;
 	}
 	
 	
@@ -293,7 +297,8 @@ public class EtatP4 extends Etat {
 	 * Diagonale qui part du haut a gauche et qui finit en bas a droite
 	 */
 	public int coupDiagonaleHGBD(Pion p) {
-		
+
+		ArrayList<Pion> ltest = new ArrayList<>();
 		// verif quel joueur est en train de jouer et on atribue le joueur opposant
 		int joueur;
 		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
@@ -335,14 +340,20 @@ public class EtatP4 extends Etat {
 		// longueur de la diagonale
 		int distance = borneDroiteX - borneGaucheX; 
 		
-		boolean ligneGagnante = true;
 		
-		
-		for (int i = 0; i <= distance; i++) {
-			ligneGagnante = true;
-			
-			if ( plateau[borneGaucheX + i][ borneGaucheY - i] == joueur) ligneGagnante = false;
-			
+		for (int i = 0; i <= distance - 3; i++) {
+			boolean ligneGagnante = true;
+			ltest.clear();
+			for (int j = i; j < i+4; j++) {
+				
+			if ( plateau[borneGaucheX + j][ borneGaucheY - j] == joueur) ligneGagnante = false;
+			ltest.add(new Pion(borneGaucheX+j, borneGaucheY+j));
+			}
+			System.out.println();
+			for(Pion m : ltest) {
+				System.out.print(m.toString());
+			}
+			System.out.println();
 			if (ligneGagnante) nb++;
 		}
 		
@@ -393,14 +404,15 @@ public class EtatP4 extends Etat {
 		// longueur de la diagonale
 		int distance = borneDroiteX - borneGaucheX; 
 		
-		boolean ligneGagnante = true;
 		
 		
-		for (int i = 0; i <= distance; i++) {
-			ligneGagnante = true;
+		
+		for (int i = 0; i <= distance - 3; i++) {
+			boolean ligneGagnante = true;
 			
+			for (int j = i; j < i+4; j++) {
 			if ( plateau[borneGaucheX + i][ borneGaucheY + i] == joueur) ligneGagnante = false;
-			
+			}
 			if (ligneGagnante) nb++;
 		}
 		
