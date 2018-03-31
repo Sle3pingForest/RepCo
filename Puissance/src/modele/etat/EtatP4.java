@@ -11,6 +11,7 @@ import modele.joueur.JoueurP4;
 public class EtatP4 extends Etat {
 
 	protected Joueur jcourant;
+	protected JoueurP4 gagant;
 	protected int[][] plateau;
 	protected Pion pIA;
 
@@ -67,7 +68,6 @@ public class EtatP4 extends Etat {
 						&& this.getPlateau()[j+3][i] == 1){
 
 					fin = true;
-					System.out.println("wewfw");
 				}
 			}
 
@@ -112,6 +112,10 @@ public class EtatP4 extends Etat {
 	}
 	else{
 		fin = true;
+	}
+	if(fin){
+		this.gagant = (JoueurP4)this.jcourant;
+		System.out.println(this.gagant.getNom() + " a win");
 	}
 	return fin;
 }
@@ -254,17 +258,26 @@ public void poserJetton(Joueur j, Jeu jeu){
 			indiceColone = sc.nextInt();
 		}
 		int k = 0;
-		if(0 < indiceColone && indiceColone < 8 ){
+		if(0 < indiceColone && indiceColone < 7 ){
 			indiceColone = indiceColone - 1;
 			valide = true;
+		}
+		if(this.plateau[0][indiceColone] != 0 &&
+					this.plateau[1][indiceColone] != 0 && 
+					this.plateau[2][indiceColone] != 0 && 
+					this.plateau[3][indiceColone] != 0 && 
+					this.plateau[4][indiceColone] != 0 &&
+					this.plateau[5][indiceColone] != 0){
+				System.out.println("full1");
+				valide = false;
 		}
 		while( k < this.plateau.length-1 && !estJouer && valide){
 
 			if((plateau[k][indiceColone] == 1 || plateau[k][indiceColone] == 2) && plateau[k + 1][indiceColone] == 0){
 				System.out.println(j.getNom() + " a joue!!!");
 				setJcourant(j);
-				//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
-				EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
+				EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
+				//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 				if(j.getNom().equals("IA")){
 					setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
 				}
@@ -280,9 +293,11 @@ public void poserJetton(Joueur j, Jeu jeu){
 			}
 			if(plateau[k][indiceColone] == 0){
 				System.out.println(j.getNom() + " a joue!!!");
+				System.out.println(jcourant.getNom());
 				setJcourant(j);
-				//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
-				EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
+				System.out.println(jcourant.getNom());
+				EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
+				//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 				if(j.getNom().equals("IA")){	
 					setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
 				}
@@ -346,20 +361,64 @@ public int evaluation(int c, EtatP4 e){
 
 	ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
 	int score, score_max, score_min;
-	/*if(e.estFinal()){
-			return
-		}*/
-
+	if(e.finJeu()){
+		if(e.getGagant().getNom().equals("IA")){
+			return +0100;
+		}
+		if(!e.getGagant().getNom().equals("IA")){
+			return -1000;
+		}
+		if(rempli()){return 0;}
+	}
 	if(c == 0){
 		return eval0(e);
 	}
-	/*
-		emsembleEtat = successeur(e);
-		if(e.jcourant.equals("IA")){
-			score_max = -1000;
-			for(EtatP4)
-		}*/
-	return 0;
+	
+	emsembleEtat = successeur(e);
+	if(e.getJcourant().getNom().equals("IA")){
+		score_max = -1000;
+		for(EtatP4 p4 : emsembleEtat){
+			score_max = max(score_max,evaluation(c-1, p4));
+		}
+		return score_max;
+	}
+	else{
+
+		score_min = +1000;
+		for(EtatP4 p4 : emsembleEtat){
+			score_min = min(score_min,evaluation(c-1, p4));
+		}
+		return score_min;
+	}
+}
+
+public int max(int a, int b ){
+	if(a >= b) return a;
+	else return b;
+}
+public int min(int a, int b ){
+	if(a >= b) return b;
+	else return a;
+}
+
+public JoueurP4 getGagant() {
+	return gagant;
+}
+
+public void setGagant(JoueurP4 gagant) {
+	this.gagant = gagant;
+}
+
+public Pion getpIA() {
+	return pIA;
+}
+
+public void setpIA(Pion pIA) {
+	this.pIA = pIA;
+}
+
+public void setPlateau(int[][] plateau) {
+	this.plateau = plateau;
 }
 
 public int evaluationAlphaBeta(int c, EtatP4 e, int alpha, int beta){
@@ -393,17 +452,13 @@ public EtatP4 minimax(EtatP4 e, int c){
 	ArrayList<EtatP4> ensembleEtat = successeur(e);
 	EtatP4 e_sortie = null;
 	int score_max = -1000;
-
-	if(e.getJcourant().getNom().equals("IA")){
-		for(EtatP4 p4 : ensembleEtat){
-			int score = evaluation(c, p4);
-			if(score > score_max){
-				e_sortie = p4;
-				score_max = score;
-			}
+	for(EtatP4 p4 : ensembleEtat){
+		p4.setJcourant(e.getJcourant());
+		int score = evaluation(c, p4);
+		if(score > score_max){
+			e_sortie = p4;
+			score_max = score;
 		}
-
-
 	}
 	return e_sortie;
 }
@@ -415,17 +470,14 @@ public EtatP4 minimaxAlphaBeta(EtatP4 e, int c, int alpha, int beta){
 	EtatP4 e_sortie = null;
 	int score_max = -1000;
 
-	if(e.getJcourant().getNom().equals("IA")){
-		for(EtatP4 p4 : ensembleEtat){
-			int score = evaluationAlphaBeta(c, p4,alpha,beta);
-			if(score > score_max){
-				e_sortie = p4;
-				score_max = score;
-			}
+	for(EtatP4 p4 : ensembleEtat){
+		int score = evaluationAlphaBeta(c, p4,alpha,beta);
+		if(score > score_max){
+			e_sortie = p4;
+			score_max = score;
 		}
-
-
 	}
+
 	return e_sortie;
 }
 public int coupLigne(Pion p) {
