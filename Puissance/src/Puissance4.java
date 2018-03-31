@@ -14,7 +14,7 @@ public class Puissance4 {
 	}
 	public void start(){
 
-		Jeu j = new Jeu("nam", "IA");
+		Jeu j = new Jeu("nam", "SF");
 		System.out.println("Joueur 1: " + j.getJ1().getNom() +" ******* Joueur 2: " + j.getJ2().getNom() );
 		j.setInitial();
 		EtatP4 e = new EtatP4(j, j.getJ1());
@@ -22,23 +22,22 @@ public class Puissance4 {
 		
 		boolean estRemplie = e.rempli();
 		while(!estRemplie){
-			e.poserJetton(j.getJ1(), j);
-			e.affichage();
+			estRemplie = e.finJeu();
+			if(!e.finJeu()){
+				e.poserJetton(j.getJ1(), j);
+				e.affichage();
+			}
 			Joueur i = j.getJ1();
 			Joueur i2 = j.getJ2();
-			for(int k = 0; k < ((JoueurP4)i).getLp().size();++k){
-				//System.out.println("Pion "+k +"("+ ((JoueurP4)i).getLp().get(k) +")") ;
+			if(!e.finJeu()){
+				e.poserJetton(j.getJ2(),j);
+				e.affichage();
 			}
-			e.poserJetton(j.getJ2(),j);
-			e.affichage();
-			for(int k = 0; k < ((JoueurP4)i).getLp().size();++k){
-				//System.out.println("Pion "+k +"("+ ((JoueurP4)i2).getLp().get(k) +")") ;
-			}
-			if(j.getJ1().getNbCoupJoue() + j.getJ2().getNbCoupJoue() == 42){
+			/*if(j.getJ1().getNbCoupJoue() + j.getJ2().getNbCoupJoue() == 42){
 				estRemplie = true;
 				System.out.println("end");
-			}
-			
+			}*/
+
 		}
 		System.out.println("end game");
 		

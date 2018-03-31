@@ -16,21 +16,20 @@ public class EtatP4 extends Etat {
 
 	public EtatP4(Jeu j) {
 		super(j);
-		this.pIA = new Pion(0, 0);
 		this.plateau = j.getPlateau();
 	}
 
 	public EtatP4(Jeu j, Joueur jc) {
 		super(j);
 		this.jcourant = jc;
-		this.pIA = new Pion(0, 0);
 		this.plateau = j.getPlateau();
 	}
 	
-	public EtatP4(Jeu j,int [][] tab){
+	
+	public EtatP4(Jeu j,Pion p, int [][] tab){
 		super(j);
-		this.pIA = new Pion(0, 0);
 		this.plateau = tab;
+		this.pIA = p;
 	}
 
 	@Override
@@ -38,9 +37,93 @@ public class EtatP4 extends Etat {
 
 		boolean fin = false;
 		if (!this.rempli()) {
+			for(int i = 0; i < this.getPlateau().length; ++i){
+				boolean ok = false;
+				int j = 0;
+				int cpt1 = 0;
+				int cpt2 = 0;
+				while(!ok && j < 5 ){
+					if(this.getPlateau()[i][j] == 2){
+						cpt1++;
+						if(cpt1 == 4){
+							ok = true;
+							fin = true;
+						}
+					}
+					if(this.getPlateau()[i][j] == 1){
+						cpt2++;
+						if(cpt2 == 4){
+							ok = true;
+							fin = true;
+						}
+					}
+					j++;
+				}
+			}
+			for(int i = 0; i < this.getPlateau()[0].length; ++i){
+				boolean ok = false;
+				int j = 0;
+				int cpt1 = 0;
+				int cpt2 = 0;
+				while(!ok && j < 5 ){
+					if(this.getPlateau()[j][i] == 2){
+						cpt1++;
+						if(cpt1 == 4){
+							ok = true;
+							fin = true;
+						}
+					}
+					if(this.getPlateau()[j][i] == 1){
+						cpt2++;
+						if(cpt2 == 4){
+							ok = true;
+							fin = true;
+						}
+					}
+					j++;
+				}
+			}
+			
 
+			for(int i = 0; i < this.getPlateau().length - 2; ++i){
+				for(int j = 0; j < this.getPlateau()[0].length -3; ++j){
+					if(this.getPlateau()[i][j] == 2 &&
+							this.getPlateau()[i+1][j+1] == 2 &&
+							this.getPlateau()[i+2][j+2] == 2 &&
+							this.getPlateau()[i+3][j+3] == 2 ){
+						fin = true;
+					}
+					
+					if(this.getPlateau()[i][j] == 1 &&
+							this.getPlateau()[i+1][j+1] == 1 &&
+							this.getPlateau()[i+2][j+2] == 1 &&
+							this.getPlateau()[i+3][j+3] == 1 ){
+						fin = true;
+					}
+				}
+			}
+			
+			for(int i = this.getPlateau().length - 1; i > 2 ; --i){
+				for(int j = 0; j < this.getPlateau()[0].length -3; ++j){
 
-		} else {
+					if(this.getPlateau()[i][j] == 2 &&
+							this.getPlateau()[i-1][j+1] == 2 &&
+							this.getPlateau()[i-2][j+2] == 2 &&
+							this.getPlateau()[i-3][j+3] == 2 ){
+						fin = true;
+					}
+					
+					if(this.getPlateau()[i][j] == 1 &&
+							this.getPlateau()[i-1][j+1] == 1&
+							this.getPlateau()[i-2][j+2] == 1 &&
+							this.getPlateau()[i-3][j+3] == 1 ){
+						fin = true;
+					}
+				}
+			}
+			
+		} 
+		else {
 			fin = true;
 		}
 		return fin;
@@ -125,8 +208,8 @@ public class EtatP4 extends Etat {
 			copyValeurTableau(tabSuc, etat.getPlateau());
 			while( j < ligne && !estPossible){
 				if(etat.getPlateau()[j][i] == 0){
-					tabSuc[j][i] = 1;
-					EtatP4 etatSuc = new EtatP4(this.jeu, tabSuc);
+					Pion p = new Pion(j, i);
+					EtatP4 etatSuc = new EtatP4(this.jeu,p, tabSuc);
 					listeSuc.add(etatSuc);
 					estPossible = true;
 				}
@@ -190,16 +273,13 @@ public class EtatP4 extends Etat {
 			}
 			while( k < this.plateau.length-1 && !estJouer && valide){
 				
-				if(plateau[k][indiceColone] == 1 & plateau[k + 1][indiceColone] == 0){
+				if((plateau[k][indiceColone] == 1 || plateau[k][indiceColone] == 2) && plateau[k + 1][indiceColone] == 0){
 					System.out.println(j.getNom() + " a joue!!!");
 					setJcourant(j);
-					EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
-					if(j.getNom().equals("IA") &&  j.getNbCoupJoue() > 0){
-						etatfavorable.setJcourant(j);
-						int x =  etatfavorable.getPion().getPosX();
-						int y = etatfavorable.getPion().getPosY();	
-						System.out.println(x +" " + y);
-						setValue(x + 1,y,j);
+					//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
+					EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
+					if(j.getNom().equals("IA")){
+						setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
 					}
 					else{
 						setValue(k + 1,indiceColone,j);
@@ -214,14 +294,10 @@ public class EtatP4 extends Etat {
 				if(plateau[k][indiceColone] == 0){
 					System.out.println(j.getNom() + " a joue!!!");
 					setJcourant(j);
-					EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
-					if(j.getNom().equals("IA") &&  j.getNbCoupJoue() > 0){	
-						etatfavorable.setJcourant(j);
-						System.out.println(etatfavorable.getPion());
-						int x =  etatfavorable.getPion().getPosX();
-						int y = etatfavorable.getPion().getPosY();	
-						System.out.println(x +" " + y);
-						setValue(x,y,j);
+					//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
+					EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
+					if(j.getNom().equals("IA")){	
+						setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
 					}
 					else{
 						setValue(k,indiceColone,j);
@@ -245,25 +321,34 @@ public class EtatP4 extends Etat {
 	 * @see modele.etat.Etat#eval0()
 	 */
 	@Override
+	/*public int eval0(EtatP4 e) {
+		// TODO Auto-generated method stub
+		
+		int coupGagnant = 0;
+		//System.out.println(e.getJcourant());
+		for (Pion p : ((JoueurP4)e.getJcourant()).getLp()) {
+			coupGagnant += coupLigne(p);
+			coupGagnant += coupColonne(p);
+			coupGagnant += coupDiagonaleBGHD(p);
+			coupGagnant += coupDiagonaleHGBD(p);
+			System.out.println("Pour ce pion " + p.toString() + "  nombre de coup gagnant " + coupGagnant);
+			//setPion(p);
+			
+		}
+		
+		return coupGagnant;
+	}*/
 	public int eval0(EtatP4 e) {
 		// TODO Auto-generated method stub
 		
 		int coupGagnant = 0;
-		System.out.println(e.getJcourant());
-		if(e.getJcourant()!= null && ((JoueurP4)e.getJcourant()).getLp() !=null ){
-			for (Pion p : ((JoueurP4)e.getJcourant()).getLp()) {
-				coupGagnant += coupLigne(p);
-				coupGagnant += coupColonne(p);
-				coupGagnant += coupDiagonaleBGHD(p);
-				coupGagnant += coupDiagonaleHGBD(p);
-				System.out.println("Pour ce pion " + p.toString() + "  nombre de coup gagnant " + coupGagnant);
-				setPion(p);
-			}
-		}
-		
+		coupGagnant += coupLigne(e.getPion());
+		coupGagnant += coupColonne(e.getPion());
+		coupGagnant += coupDiagonaleBGHD(e.getPion());
+		coupGagnant += coupDiagonaleHGBD(e.getPion());
+
 		return coupGagnant;
 	}
-	
 	/**
 	 * fonction evaluation
 	 * @param c = entier qui indique le nombre de coup dans le futur
@@ -271,6 +356,26 @@ public class EtatP4 extends Etat {
 	 * @return  entier : coup gagant
 	 */
 	public int evaluation(int c, EtatP4 e){
+		
+		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
+		int score, score_max, score_min;
+		/*if(e.estFinal()){
+			return
+		}*/
+		
+		if(c == 0){
+			return eval0(e);
+		}
+		/*
+		emsembleEtat = successeur(e);
+		if(e.jcourant.equals("IA")){
+			score_max = -1000;
+			for(EtatP4)
+		}*/
+		return 0;
+	}
+	
+	public int evaluationAlphaBeta(int c, EtatP4 e, int alpha, int beta){
 		
 		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
 		int score, score_max, score_min;
@@ -308,7 +413,6 @@ public class EtatP4 extends Etat {
 				if(score > score_max){
 					e_sortie = p4;
 					score_max = score;
-					//e_sortie.setPion(p)
 				}
 			}
 			
@@ -317,6 +421,26 @@ public class EtatP4 extends Etat {
 		return e_sortie;
 	}
 
+	
+	public EtatP4 minimaxAlphaBeta(EtatP4 e, int c, int alpha, int beta){
+		
+		ArrayList<EtatP4> ensembleEtat = successeur(e);
+		EtatP4 e_sortie = null;
+		int score_max = -1000;
+		
+		if(e.getJcourant().getNom().equals("IA")){
+			for(EtatP4 p4 : ensembleEtat){
+				int score = evaluationAlphaBeta(c, p4,alpha,beta);
+				if(score > score_max){
+					e_sortie = p4;
+					score_max = score;
+				}
+			}
+			
+			
+		}
+		return e_sortie;
+	}
 	public int coupLigne(Pion p) {
 		
 		// verif quel joueur est en train de jouer et on atribue le joueur opposant
@@ -432,11 +556,11 @@ public class EtatP4 extends Etat {
 			if ( plateau[borneGaucheX + j][ borneGaucheY - j] == joueur) ligneGagnante = false;
 			ltest.add(new Pion(borneGaucheX+j, borneGaucheY+j));
 			}
-			System.out.println();
+			//System.out.println();
 			for(Pion m : ltest) {
-				System.out.print(m.toString());
+				//System.out.print(m.toString());
 			}
-			System.out.println();
+			//System.out.println();
 			if (ligneGagnante) nb++;
 		}
 		
