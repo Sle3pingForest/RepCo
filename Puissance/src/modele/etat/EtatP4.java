@@ -115,7 +115,6 @@ public class EtatP4 extends Etat {
 	}
 	if(fin){
 		this.gagant = (JoueurP4)this.jcourant;
-		System.out.println(this.gagant.getNom() + " a win");
 	}
 	return fin;
 }
@@ -276,7 +275,7 @@ public void poserJetton(Joueur j, Jeu jeu){
 			if((plateau[k][indiceColone] == 1 || plateau[k][indiceColone] == 2) && plateau[k + 1][indiceColone] == 0){
 				System.out.println(j.getNom() + " a joue!!!");
 				setJcourant(j);
-				EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
+				EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
 				//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 				if(j.getNom().equals("IA")){
 					setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
@@ -293,10 +292,8 @@ public void poserJetton(Joueur j, Jeu jeu){
 			}
 			if(plateau[k][indiceColone] == 0){
 				System.out.println(j.getNom() + " a joue!!!");
-				System.out.println(jcourant.getNom());
 				setJcourant(j);
-				System.out.println(jcourant.getNom());
-				EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
+				EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
 				//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 				if(j.getNom().equals("IA")){	
 					setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
@@ -363,7 +360,7 @@ public int evaluation(int c, EtatP4 e){
 	int score, score_max, score_min;
 	if(e.finJeu()){
 		if(e.getGagant().getNom().equals("IA")){
-			return +0100;
+			return +1000;
 		}
 		if(!e.getGagant().getNom().equals("IA")){
 			return -1000;
@@ -425,20 +422,43 @@ public int evaluationAlphaBeta(int c, EtatP4 e, int alpha, int beta){
 
 	ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
 	int score, score_max, score_min;
-	/*if(e.estFinal()){
-			return
-		}*/
-
+	if(e.finJeu()){
+		if(e.getGagant().getNom().equals("IA")){
+			return +1000;
+		}
+		if(!e.getGagant().getNom().equals("IA")){
+			return -1000;
+		}
+		if(rempli()){return 0;}
+	}
 	if(c == 0){
 		return eval0(e);
 	}
-	/*
-		emsembleEtat = successeur(e);
-		if(e.jcourant.equals("IA")){
-			score_max = -1000;
-			for(EtatP4)
-		}*/
-	return 0;
+	
+	emsembleEtat = successeur(e);
+	if(e.getJcourant().getNom().equals("IA")){
+		score_max = -1000;
+		for(EtatP4 p4 : emsembleEtat){
+			score_max = max(score_max,evaluationAlphaBeta(c-1,p4, alpha, beta));
+			if(score_max >= beta){
+				return score_max;
+			}
+			alpha = max(alpha, score_max);
+		}
+		return score_max;
+	}
+	else{
+
+		score_min = +1000;
+		for(EtatP4 p4 : emsembleEtat){
+			score_min = min(score_min,evaluation(c-1, p4));
+			if(score_min <= alpha){
+				return score_min;
+			}
+			beta = min(beta, score_min);
+		}
+		return score_min;
+	}
 }
 
 /**

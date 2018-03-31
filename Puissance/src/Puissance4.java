@@ -14,7 +14,7 @@ public class Puissance4 {
 	}
 	public void start(){
 
-		Jeu j = new Jeu("nam", "SF");
+		Jeu j = new Jeu("nam", "IA");
 		System.out.println("Joueur 1: " + j.getJ1().getNom() +" ******* Joueur 2: " + j.getJ2().getNom() );
 		j.setInitial();
 		EtatP4 e = new EtatP4(j, j.getJ1());
@@ -39,6 +39,7 @@ public class Puissance4 {
 			}*/
 
 		}
+		System.out.println(e.getGagant().getNom() + "a win");
 		System.out.println("end game");
 		
 		
