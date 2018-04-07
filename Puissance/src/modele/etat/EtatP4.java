@@ -249,23 +249,23 @@ public class EtatP4 extends Etat {
 	@Override
 	public void poserJetton(Joueur j, Jeu jeu){
 
-	
-	boolean estJouer = false;
-	boolean valide = false;
-	int indiceColone = 1;
-	while(!valide){	
-		if(!j.getNom().equals("IA")){
-			Scanner sc = new Scanner(System.in);
-			indiceColone = sc.nextInt();
-		}
-		int k = 0;
-		if(0 < indiceColone && indiceColone < 8 ){
-			indiceColone = indiceColone - 1;
-			valide = true;
-		}
 
-		EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
-		if(this.plateau[0][indiceColone] != 0 &&
+		boolean estJouer = false;
+		boolean valide = false;
+		int indiceColone = 1;
+		while(!valide){	
+			if(!j.getNom().equals("IA")){
+				Scanner sc = new Scanner(System.in);
+				indiceColone = sc.nextInt();
+			}
+			int k = 0;
+			if(0 < indiceColone && indiceColone < 8 ){
+				indiceColone = indiceColone - 1;
+				valide = true;
+			}
+
+			EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
+			if(this.plateau[0][indiceColone] != 0 &&
 					this.plateau[1][indiceColone] != 0 && 
 					this.plateau[2][indiceColone] != 0 && 
 					this.plateau[3][indiceColone] != 0 && 
@@ -600,7 +600,7 @@ public class EtatP4 extends Etat {
 			borneDroiteY = p.getPosY() - 3;
 		} else {
 
-			
+
 			int min = Math.min( plateau.length - 1 - p.getPosX()  , p.getPosY());
 
 			borneDroiteX = p.getPosX() + min;
@@ -695,57 +695,39 @@ public class EtatP4 extends Etat {
 		return this.pIA;
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//  EVAL NUMERO 3    qui va calculer  le score en fonction des triplon doublon blocage ou meme gagnage
 
 	public int eval0_2(Pion p) {
 
 		int score = 0;
 
-		/* ligne
-		 * clonne
-		 * diago ghdb
-		 * diago gb dh
-		 */
-
-
-
-
-
+		score += coup_ligne_2(p);
+		score += coupColonne_2(p);
+		score += coupDiagonaleBGHD_2(p);
+		score += coupDiagonaleHGBD_2(p);
 
 		return score;
 	}
 
-	
-	
+
+
 	public int coup_ligne_2(Pion p) {
-		
-		
 
-
-		// verif quel joueur est en train de jouer et on atribue le joueur opposant
-		int joueur = 1, opposant = 2;
-		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) {
-			opposant = 1;
-			joueur = 2;
-		}
-		// nb de coup gagnant en ligne par rapport à un pion
-		int nb = 0, gagnant =0, vide =0, consecutif = 0;
-		int score = 0, compteur = 1;
 
 		// borne correspondant soit aux limite de tableau
 		int borneGauche = 0, borneDroite = 7;
@@ -753,37 +735,324 @@ public class EtatP4 extends Etat {
 		if (p.getPosX() - 3 > 0) borneGauche = p.getPosX()-3; 
 		if (p.getPosX() + 3 < plateau.length) borneDroite = p.getPosX()+3; 
 
+		int score = score_ligne_colonne_2(borneGauche, borneDroite, p, true);
+
+		return score;
+	}
+	
+	
+	public int coupColonne_2(Pion p) {
+
+		// nb de coup gagnant en ligne par rapport à un pion
+		int score = 0;
+
+		// borne correspondant soit aux limite de tableau
+		int borneGauche = 0, borneDroite = 5;
+
+		if (p.getPosY() - 3 >= 0) borneGauche = p.getPosY()-3; 
+		if (p.getPosY() + 3 < plateau[0].length) borneDroite = p.getPosY()+3; 
+
+		score = score_ligne_colonne_2(borneGauche, borneDroite, p, false);
+		
+		return score;
+	}
+	
+
+	public int score_ligne_colonne_2(int borneGauche, int borneDroite, Pion p, boolean ligne) {
+
+		// verif quel joueur est en train de jouer et on atribue le joueur opposant
+		int joueur = 1, opposant = 2;
+		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) {
+			opposant = 1;
+			joueur = 2;
+		}
+
+		// nb de coup gagnant en ligne par rapport à un pion
+		int nb = 0, gagnant =0, vide =0, pionadverse = 0;
+		int score = 0, compteur = 0;
+		int tab[] = new int[4];
+
+		// Calcul du score sur la ligne
+
 		for (int i = borneGauche; i <= borneDroite - 3; i++) {
 			boolean ligneGagnante = true;
-			compteur = 1;
+			tab = new int[4];
+			nb = 0;
+			compteur = 0;
 			vide =0;
-			consecutif = 0;
+			pionadverse = 0;
 
 			for (int j = i; j < i+4; j++) {
-				// on regarde si c'est un pion adverse 
-				if ( plateau[i][p.getPosY()] == opposant) ligneGagnante = false;
-				else if ( plateau[i][p.getPosY()] == joueur){
-					compteur++;
+				if (ligne) {
+					// on regarde si c'est un pion adverse 
+					if ( plateau[i][p.getPosY()] == opposant) {
+						tab[nb] = opposant;
+						pionadverse++;
+						ligneGagnante = false;
+					} else if ( plateau[i][p.getPosY()] == joueur){
+						tab[nb] = joueur;
+						compteur++;
+					} else { 
+						vide++;
+						tab[nb] = 0;
+					}
+				} else {
+					// on regarde si c'est un pion adverse 
+					if ( plateau[p.getPosX()][i] == opposant) {
+						tab[nb] = opposant;
+						pionadverse++;
+						ligneGagnante = false;
+					} else if ( plateau[p.getPosX()][i] == joueur){
+						tab[nb] = joueur;
+						compteur++;
+					} else { 
+						vide++;
+						tab[nb] = 0;
+					}
 				}
+				nb++;
 			}
-			if (ligneGagnante) nb++;
+
+			//if (ligneGagnante) nb++;
+
+			// calcul du score pour chaque cas 
 			switch (compteur) {
-			case 1:
+			case 0:
+				if (pionadverse == 3) score += 10000; // bloque un puissance 4 adverse
+
+				else if(pionadverse == 2) {
+					// on recupere lordre de placement des pions adverse
+					int adv1 = -1,adv2 = -1;
+					for (int k = i; k < i+4; i++) {
+						if (tab[k] == opposant) {
+							if (adv1 == -1) adv1 = k;
+							else adv2 = k;
+						}
+					}
+					// on regarde si le pion place est entre 2 pions adverse
+					if (adv1 < p.getPosX() && adv2 > p.getPosX() ) score += 11; 
+					else score += 7;
+				}
+
+				else if (pionadverse == 1) score += 5; // on se place a proximite a distance 4 max dun pion adverse
+				else score += 1; // place un pion sans pion adverse alentour
 				break;
-			case 2:
+
+			case 1:
+
+				if ( pionadverse == 2) score += 11;
+				else if(pionadverse == 1)  score += 5;
+				else score += 7;
+				break;
+
+			case 2:    
+
+				if ( vide == 2 ) score += 50; // cas ou il y a deja deux pions places sur une meme ligne et quun puissance 4 est encore possible
+				else if (pionadverse == 1) score += 1;
+				else  score += 1;
 				break;
 			case 3:
+				score += Integer.MAX_VALUE; // on est dans la cas ou le pion plac� donne un puissance 4
 				break;
 			case 4:
+				// pas de cas 4 sinon cela veut dire que le joueur a deja place 4 pions aligne et aurait du deja gagne
 				break;
-				default:
-					break;
+			default:
+				break;
 			}
+		}
+		return score;
+	}
+
+
+
+	
+	
+	/*
+	 * Diagonale qui part du haut a gauche et qui finit en bas a droite
+	 */
+	public int coupDiagonaleHGBD_2(Pion p) {
+
+
+		// borne correspondant soit aux limite de tableau
+		int borneGaucheX=0, borneGaucheY=5, borneDroiteX=6, borneDroiteY=0;
+
+
+		// calcul borne diago Haut gauche
+		if ( p.getPosX()-3 >= 0  && p.getPosY() + 3 < plateau[0].length) {
+			borneGaucheX = p.getPosX() - 3;
+			borneGaucheY = p.getPosY() + 3;
+		} else {
+			int min = Math.min( p.getPosX() , plateau[0].length - 1 - p.getPosY());
+
+			borneGaucheX = p.getPosX() - min;
+			borneGaucheY = p.getPosY() + min;
+		}
+
+		// calcul borne diago Bas droite 
+		if ( p.getPosY()-3 >= 0  && p.getPosX() + 3 < plateau.length) {
+			borneDroiteX = p.getPosX() + 3;
+			borneDroiteY = p.getPosY() - 3;
+		} else {
+
+
+			int min = Math.min( plateau.length - 1 - p.getPosX()  , p.getPosY());
+
+			borneDroiteX = p.getPosX() + min;
+			borneDroiteY = p.getPosY() - min;
+		}
+
+		int score = score_diago_2(borneGaucheX, borneGaucheY, borneDroiteX, borneDroiteY, p, true);
+
+		return score;
+	}
+	
+	
+	/*
+	 * Diagonale qui part du bas a gauche et qui finit en haut a droite
+	 */
+	public int coupDiagonaleBGHD_2(Pion p) {
+
+		// borne correspondant soit aux limite de tableau
+		int borneGaucheX=0, borneGaucheY=0, borneDroiteX=6, borneDroiteY=5;
+
+
+		// calcul borne diago gauche
+		if ( p.getPosX()-3 >= 0  && p.getPosY() - 3 >= 0) {
+			borneGaucheX = p.getPosX() - 3;
+			borneGaucheY = p.getPosY() - 3;
+		} else {
+			int min = Math.min( p.getPosX() , p.getPosY());
+
+			borneGaucheX = p.getPosX() - min;
+			borneGaucheY = p.getPosY() - min;
 		}
 
 
-		return 0;
+		// calcul borne diago droite 
+		if ( p.getPosY()+3 < plateau[0].length  && p.getPosX() + 3 < plateau.length) {
+			borneDroiteX = p.getPosX() + 3;
+			borneDroiteY = p.getPosY() + 3;
+		} else {
+
+			int min = Math.min( plateau.length - 1 - p.getPosX() , plateau[0].length - 1 - p.getPosY() );
+
+			borneDroiteX = p.getPosX() + min;
+			borneDroiteY = p.getPosY() + min;
+		}
+
+		int score = score_diago_2(borneGaucheX, borneGaucheY, borneDroiteX, borneDroiteY, p, false);
+
+		return score;
 	}
+	
+	
+	public int score_diago_2(int borneGaucheX, int borneGaucheY, int borneDroiteX, int borneDroiteY, Pion p, boolean diagoHaute) {
+
+		// verif quel joueur est en train de jouer et on atribue le joueur opposant
+		int joueur = 1, opposant = 2;
+		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) {
+			opposant = 1;
+			joueur = 2;
+		}
+
+		// nb de coup gagnant en ligne par rapport à un pion
+		int nb = 0, gagnant =0, vide =0, pionadverse = 0;
+		int score = 0, compteur = 0;
+		int tab[] = new int[4];
+
+		// Calcul du score sur la ligne
+
+		for (int i = borneGaucheX; i <= borneDroiteX - 3; i++) {
+			boolean ligneGagnante = true;
+			tab = new int[4];
+			nb = 0;
+			compteur = 0;
+			vide =0;
+			pionadverse = 0;
+
+			for (int j = i; j < i+4; j++) {
+				if (diagoHaute) {
+					// on regarde si c'est un pion adverse 
+					if ( plateau[borneGaucheX + j][ borneGaucheY - j] == opposant) {
+						tab[nb] = opposant;
+						pionadverse++;
+						ligneGagnante = false;
+					} else if ( plateau[borneGaucheX + j][ borneGaucheY - j] == joueur){
+						tab[nb] = joueur;
+						compteur++;
+					} else { 
+						vide++;
+						tab[nb] = 0;
+					}
+				} else {
+					// on regarde si c'est un pion adverse 
+					if ( plateau[borneGaucheX + i][ borneGaucheY + i] == opposant) {
+						tab[nb] = opposant;
+						pionadverse++;
+						ligneGagnante = false;
+					} else if ( plateau[borneGaucheX + i][ borneGaucheY + i] == joueur){
+						tab[nb] = joueur;
+						compteur++;
+					} else { 
+						vide++;
+						tab[nb] = 0;
+					}
+				}
+				nb++;
+			}
+
+			//if (ligneGagnante) nb++;
+
+			// calcul du score pour chaque cas 
+			switch (compteur) {
+			case 0:
+				if (pionadverse == 3) score += 10000; // bloque un puissance 4 adverse
+
+				else if(pionadverse == 2) {
+					// on recupere lordre de placement des pions adverse
+					int adv1 = -1,adv2 = -1;
+					for (int k = i; k < i+4; i++) {
+						if (tab[k] == opposant) {
+							if (adv1 == -1) adv1 = k;
+							else adv2 = k;
+						}
+					}
+					// on regarde si le pion place est entre 2 pions adverse
+					if (adv1 < p.getPosX() && adv2 > p.getPosX() ) score += 11; 
+					else score += 7;
+				}
+
+				else if (pionadverse == 1) score += 5; // on se place a proximite a distance 4 max dun pion adverse
+				else score += 1; // place un pion sans pion adverse alentour
+				break;
+
+			case 1:
+
+				if ( pionadverse == 2) score += 11;
+				else if(pionadverse == 1)  score += 5;
+				else score += 7;
+				break;
+
+			case 2:    
+
+				if ( vide == 2 ) score += 50; // cas ou il y a deja deux pions places sur une meme ligne et quun puissance 4 est encore possible
+				else if (pionadverse == 1) score += 1;
+				else  score += 1;
+				break;
+			case 3:
+				score += Integer.MAX_VALUE; // on est dans la cas ou le pion plac� donne un puissance 4
+				break;
+			case 4:
+				// pas de cas 4 sinon cela veut dire que le joueur a deja place 4 pions aligne et aurait du deja gagne
+				break;
+			default:
+				break;
+			}
+		}
+		return score;
+	}
+
 
 
 	/*
