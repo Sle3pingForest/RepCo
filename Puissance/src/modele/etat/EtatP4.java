@@ -737,12 +737,14 @@ public class EtatP4 extends Etat {
 
 
 		// verif quel joueur est en train de jouer et on atribue le joueur opposant
-		int joueur;
-		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
-		else joueur = 2;
-
+		int joueur = 1, opposant = 2;
+		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) {
+			opposant = 1;
+			joueur = 2;
+		}
+		
 		// nb de coup gagnant en ligne par rapport à un pion
-		int nb = 0, gagnant =0;
+		int nb = 0, gagnant =0, vide =0, consecutif = 0;
 		int score = 0, compteur = 1;
 
 		// borne correspondant soit aux limite de tableau
@@ -754,11 +756,15 @@ public class EtatP4 extends Etat {
 		for (int i = borneGauche; i <= borneDroite - 3; i++) {
 			boolean ligneGagnante = true;
 			compteur = 1;
+			vide =0;
+			consecutif = 0;
 
 			for (int j = i; j < i+4; j++) {
 				// on regarde si c'est un pion adverse 
-				if ( plateau[i][p.getPosY()] == joueur) ligneGagnante = false;
-				else compteur++;
+				if ( plateau[i][p.getPosY()] == opposant) ligneGagnante = false;
+				else if ( plateau[i][p.getPosY()] == joueur){
+					compteur++;
+				}
 			}
 			if (ligneGagnante) nb++;
 			switch (compteur) {
