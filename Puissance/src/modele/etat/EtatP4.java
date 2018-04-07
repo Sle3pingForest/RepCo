@@ -245,23 +245,27 @@ public class EtatP4 extends Etat {
 	}
 
 
+
 	@Override
 	public void poserJetton(Joueur j, Jeu jeu){
 
-		boolean estJouer = false;
-		boolean valide = false;
-		int indiceColone = 1;
-		while(!valide){	
-			if(!j.getNom().equals("IA")){
-				Scanner sc = new Scanner(System.in);
-				indiceColone = sc.nextInt();
-			}
-			int k = 0;
-			if(0 < indiceColone && indiceColone < 7 ){
-				indiceColone = indiceColone - 1;
-				valide = true;
-			}
-			if(this.plateau[0][indiceColone] != 0 &&
+	
+	boolean estJouer = false;
+	boolean valide = false;
+	int indiceColone = 1;
+	while(!valide){	
+		if(!j.getNom().equals("IA")){
+			Scanner sc = new Scanner(System.in);
+			indiceColone = sc.nextInt();
+		}
+		int k = 0;
+		if(0 < indiceColone && indiceColone < 8 ){
+			indiceColone = indiceColone - 1;
+			valide = true;
+		}
+
+		EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
+		if(this.plateau[0][indiceColone] != 0 &&
 					this.plateau[1][indiceColone] != 0 && 
 					this.plateau[2][indiceColone] != 0 && 
 					this.plateau[3][indiceColone] != 0 && 
@@ -275,7 +279,7 @@ public class EtatP4 extends Etat {
 				if((plateau[k][indiceColone] == 1 || plateau[k][indiceColone] == 2) && plateau[k + 1][indiceColone] == 0){
 					System.out.println(j.getNom() + " a joue!!!");
 					setJcourant(j);
-					EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
+					//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
 					//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 					if(j.getNom().equals("IA")){
 						setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
@@ -293,7 +297,7 @@ public class EtatP4 extends Etat {
 				if(plateau[k][indiceColone] == 0){
 					System.out.println(j.getNom() + " a joue!!!");
 					setJcourant(j);
-					EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
+					//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
 					//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 					if(j.getNom().equals("IA")){	
 						setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
@@ -670,9 +674,6 @@ public class EtatP4 extends Etat {
 
 		// longueur de la diagonale
 		int distance = borneDroiteX - borneGaucheX; 
-
-
-
 
 		for (int i = 0; i <= distance - 3; i++) {
 			boolean ligneGagnante = true;
