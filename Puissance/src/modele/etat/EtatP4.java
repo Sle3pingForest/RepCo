@@ -566,10 +566,9 @@ public int coupColonne(Pion p) {
 	return nb;
 }
 
-
 /*
- * Diagonale qui part du haut a gauche et qui finit en bas a droite
- */
+* Diagonale qui part du haut a gauche et qui finit en bas a droite
+*/
 public int coupDiagonaleHGBD(Pion p) {
 
 	ArrayList<Pion> ltest = new ArrayList<>();
@@ -578,14 +577,14 @@ public int coupDiagonaleHGBD(Pion p) {
 	if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
 	else joueur = 2;
 
-	// nb de coup gagnant en ligne par rapport Ã  un pion
+	// nb de coup gagnant en ligne par rapport Ã  un pion
 	int nb = 0;
 
 	// borne correspondant soit aux limite de tableau
-	int borneGaucheX, borneGaucheY, borneDroiteX, borneDroiteY;
+	int borneGaucheX=0, borneGaucheY=5, borneDroiteX=6, borneDroiteY=0;
 
 
-	// calcul borne diago gauche
+	// calcul borne diago Haut gauche
 	if ( p.getPosX()-3 >= 0  && p.getPosY() + 3 < plateau[0].length) {
 		borneGaucheX = p.getPosX() - 3;
 		borneGaucheY = p.getPosY() + 3;
@@ -598,14 +597,14 @@ public int coupDiagonaleHGBD(Pion p) {
 
 
 
-	// calcul borne diago droite 
+	// calcul borne diago Bas droite 
 	if ( p.getPosY()-3 >= 0  && p.getPosX() + 3 < plateau.length) {
 		borneDroiteX = p.getPosX() + 3;
 		borneDroiteY = p.getPosY() - 3;
 	} else {
 
-		// pas fini
-		int min = Math.min( plateau.length - 1 - p.getPosX()  , p.getPosY());
+		
+		int min = Math.min( plateau.length - 1 -p.getPosX()  , p.getPosY());
 
 		borneDroiteX = p.getPosX() + min;
 		borneDroiteY = p.getPosY() - min;
@@ -624,9 +623,9 @@ public int coupDiagonaleHGBD(Pion p) {
 			ltest.add(new Pion(borneGaucheX+j, borneGaucheY+j));
 		}
 		//System.out.println();
-		for(Pion m : ltest) {
+		/*for(Pion m : ltest) {
 			//System.out.print(m.toString());
-		}
+		}*/
 		//System.out.println();
 		if (ligneGagnante) nb++;
 	}
@@ -635,41 +634,42 @@ public int coupDiagonaleHGBD(Pion p) {
 }
 
 /*
- * Diagonale qui part du bas a gauche et qui finit en haut a droite
- */
+* Diagonale qui part du bas a gauche et qui finit en haut a droite
+*/
 public int coupDiagonaleBGHD(Pion p) {
+	System.out.println(" wallah la mere a  ");
 
 	// verif quel joueur est en train de jouer et on atribue le joueur opposant
 	int joueur;
 	if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
 	else joueur = 2;
 
-	// nb de coup gagnant en ligne par rapport Ã  un pion
+	// nb de coup gagnant en ligne par rapport Ã  un pion
 	int nb = 0;
 
 	// borne correspondant soit aux limite de tableau
-	int borneGaucheX, borneGaucheY, borneDroiteX, borneDroiteY;
+	int borneGaucheX=0, borneGaucheY=0, borneDroiteX=6, borneDroiteY=5;
 
 
 	// calcul borne diago gauche
-	if ( p.getPosX()-3 >= 0  && p.getPosY() - 3 >= 0) {
+	if (p.getPosX()-3 >= 0  && p.getPosY() - 3 >= 0) {
 		borneGaucheX = p.getPosX() - 3;
 		borneGaucheY = p.getPosY() - 3;
 	} else {
 		int min = Math.min( p.getPosX() , p.getPosY());
 
-		borneGaucheX = p.getPosX() - min;
+		borneGaucheX = p.getPosX()- min;
 		borneGaucheY = p.getPosY() - min;
 	}
 
 
 	// calcul borne diago droite 
-	if ( p.getPosY()+3 < plateau[0].length  && p.getPosX() + 3 < plateau.length) {
+	if ( p.getPosY()+3 < plateau[0].length  &&p.getPosX() + 3 < plateau.length) {
 		borneDroiteX = p.getPosX() + 3;
 		borneDroiteY = p.getPosY() + 3;
 	} else {
 
-		int min = Math.min( plateau.length - 1 - p.getPosX() , plateau[0].length - 1 - p.getPosY() );
+		int min = Math.min( plateau.length - 1 -p.getPosX() , plateau[0].length - 1 - p.getPosY() );
 
 		borneDroiteX = p.getPosX() + min;
 		borneDroiteY = p.getPosY() + min;
