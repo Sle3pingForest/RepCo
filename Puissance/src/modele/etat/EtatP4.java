@@ -630,7 +630,7 @@ public class EtatP4 extends Etat {
 	 * Diagonale qui part du bas a gauche et qui finit en haut a droite
 	 */
 	public int coupDiagonaleBGHD(Pion p) {
-		System.out.println(" wallah ");
+		System.out.println(" wallah la mere a  ");
 
 		// verif quel joueur est en train de jouer et on atribue le joueur opposant
 		int joueur;
