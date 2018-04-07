@@ -249,23 +249,22 @@ public class EtatP4 extends Etat {
 	@Override
 	public void poserJetton(Joueur j, Jeu jeu){
 
-	
-	boolean estJouer = false;
-	boolean valide = false;
-	int indiceColone = 1;
-	while(!valide){	
-		if(!j.getNom().equals("IA")){
-			Scanner sc = new Scanner(System.in);
-			indiceColone = sc.nextInt();
-		}
-		int k = 0;
-		if(0 < indiceColone && indiceColone < 8 ){
-			indiceColone = indiceColone - 1;
-			valide = true;
-		}
 
-		EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
-		if(this.plateau[0][indiceColone] != 0 &&
+		boolean estJouer = false;
+		boolean valide = false;
+		int indiceColone = 1;
+		while(!valide){	
+			if(!j.getNom().equals("IA")){
+				Scanner sc = new Scanner(System.in);
+				indiceColone = sc.nextInt();
+			}
+			int k = 0;
+			if(0 < indiceColone && indiceColone < 8 ){
+				indiceColone = indiceColone - 1;
+				valide = true;
+			}
+
+			if(!j.getNom().equals("IA") && this.plateau[0][indiceColone] != 0 &&
 					this.plateau[1][indiceColone] != 0 && 
 					this.plateau[2][indiceColone] != 0 && 
 					this.plateau[3][indiceColone] != 0 && 
@@ -282,6 +281,7 @@ public class EtatP4 extends Etat {
 					//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
 					//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 					if(j.getNom().equals("IA")){
+						EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
 						setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
 					}
 					else{
@@ -290,7 +290,7 @@ public class EtatP4 extends Etat {
 					Pion p = new Pion(k+1, indiceColone);
 					j.setNbCoupJoue(1);
 					estJouer = true;
-					((JoueurP4)j).ajouterPion(p);
+					//((JoueurP4)j).ajouterPion(p);
 
 
 				}
@@ -300,6 +300,7 @@ public class EtatP4 extends Etat {
 					//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
 					//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 					if(j.getNom().equals("IA")){	
+						EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
 						setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
 					}
 					else{
@@ -308,7 +309,7 @@ public class EtatP4 extends Etat {
 					Pion p = new Pion(k, indiceColone);
 					j.setNbCoupJoue(1);
 					estJouer = true;
-					((JoueurP4)j).ajouterPion(p);
+					//((JoueurP4)j).ajouterPion(p);
 				}
 				k++;
 			}
@@ -341,14 +342,14 @@ public class EtatP4 extends Etat {
 
 		return coupGagnant;
 	}*/
-	public int eval0(EtatP4 e) {
+	public int eval0(EtatP4 e , Joueur j) {
 		// TODO Auto-generated method stub
 
 		int coupGagnant = 0;
-		coupGagnant += coupLigne(e.getPion());
-		coupGagnant += coupColonne(e.getPion());
-		coupGagnant += coupDiagonaleBGHD(e.getPion());
-		coupGagnant += coupDiagonaleHGBD(e.getPion());
+		coupGagnant += coupLigne(e.getPion(), j);
+		coupGagnant += coupColonne(e.getPion(),j);
+		coupGagnant += coupDiagonaleBGHD(e.getPion(),j);
+		coupGagnant += coupDiagonaleHGBD(e.getPion(),j);
 
 		return coupGagnant;
 	}
@@ -361,7 +362,7 @@ public class EtatP4 extends Etat {
 	public int evaluation(int c, EtatP4 e){
 
 		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
-		int score, score_max, score_min;
+		int score, score_max = - 1000, score_min;
 		if(e.finJeu()){
 			if(e.getGagant().getNom().equals("IA")){
 				return +1000;
@@ -372,23 +373,34 @@ public class EtatP4 extends Etat {
 			if(rempli()){return 0;}
 		}
 		if(c == 0){
-			return eval0(e);
+				//System.out.println(eval0(e, e.getJcourant()));
+				return eval0(e, e.getJcourant());
+			/*if(e.getJcourant().equals(this.jeu.getJ1().getNom())){
+				return eval0_3(e, this.jeu.getJ2());
+			}
+			else{
+
+				return eval0_3(e, this.jeu.getJ1());
+			}*/
 		}
 
 		emsembleEtat = successeur(e);
 		if(e.getJcourant().getNom().equals("IA")){
 			score_max = -1000;
 			for(EtatP4 p4 : emsembleEtat){
+				p4.setJcourant(e.getJcourant());
 				score_max = max(score_max,evaluation(c-1, p4));
 			}
+			System.out.println("score max: " +score_max);
 			return score_max;
 		}
 		else{
-
 			score_min = +1000;
 			for(EtatP4 p4 : emsembleEtat){
+				p4.setJcourant(e.getJcourant());
 				score_min = min(score_min,evaluation(c-1, p4));
 			}
+			System.out.println("score min " + score_min);
 			return score_min;
 		}
 	}
@@ -436,7 +448,7 @@ public class EtatP4 extends Etat {
 			if(rempli()){return 0;}
 		}
 		if(c == 0){
-			return eval0(e);
+			return eval0(e, e.getJcourant());
 		}
 
 		emsembleEtat = successeur(e);
@@ -479,11 +491,15 @@ public class EtatP4 extends Etat {
 		for(EtatP4 p4 : ensembleEtat){
 			p4.setJcourant(e.getJcourant());
 			int score = evaluation(c, p4);
-			if(score > score_max){
+			if(score >= score_max){
 				e_sortie = p4;
+				System.out.println(score + "**" + score_max);
 				score_max = score;
 			}
 		}
+		
+		
+		
 		return e_sortie;
 	}
 
@@ -504,11 +520,11 @@ public class EtatP4 extends Etat {
 
 		return e_sortie;
 	}
-	public int coupLigne(Pion p) {
+	public int coupLigne(Pion p, Joueur player) {
 
 		// verif quel joueur est en train de jouer et on atribue le joueur opposant
 		int joueur;
-		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
+		if(player.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
 		else joueur = 2;
 
 		// nb de coup gagnant en ligne par rapport à un pion
@@ -533,11 +549,11 @@ public class EtatP4 extends Etat {
 		return nb;
 	}
 
-	public int coupColonne(Pion p) {
+	public int coupColonne(Pion p, Joueur player) {
 
 		// verif quel joueur est en train de jouer et on atribue le joueur opposant
 		int joueur;
-		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
+		if(player.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
 		else joueur = 2;
 
 		// nb de coup gagnant en ligne par rapport à un pion
@@ -566,12 +582,12 @@ public class EtatP4 extends Etat {
 	/*
 	 * Diagonale qui part du haut a gauche et qui finit en bas a droite
 	 */
-	public int coupDiagonaleHGBD(Pion p) {
+	public int coupDiagonaleHGBD(Pion p , Joueur player) {
 
 		ArrayList<Pion> ltest = new ArrayList<>();
 		// verif quel joueur est en train de jouer et on atribue le joueur opposant
 		int joueur;
-		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
+		if(player.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
 		else joueur = 2;
 
 		// nb de coup gagnant en ligne par rapport à un pion
@@ -600,7 +616,7 @@ public class EtatP4 extends Etat {
 			borneDroiteY = p.getPosY() - 3;
 		} else {
 
-			
+
 			int min = Math.min( plateau.length - 1 - p.getPosX()  , p.getPosY());
 
 			borneDroiteX = p.getPosX() + min;
@@ -633,12 +649,12 @@ public class EtatP4 extends Etat {
 	/*
 	 * Diagonale qui part du bas a gauche et qui finit en haut a droite
 	 */
-	public int coupDiagonaleBGHD(Pion p) {
-		System.out.println(" wallah la mere a  ");
+	public int coupDiagonaleBGHD(Pion p, Joueur player) {
+		//System.out.println(" wallah la mere a  ");
 
 		// verif quel joueur est en train de jouer et on atribue le joueur opposant
 		int joueur;
-		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
+		if(player.getNom().equals(this.jeu.getJ1().getNom().toString())) joueur = 1;
 		else joueur = 2;
 
 		// nb de coup gagnant en ligne par rapport à un pion
@@ -695,21 +711,21 @@ public class EtatP4 extends Etat {
 		return this.pIA;
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//  EVAL NUMERO 3    qui va calculer  le score en fonction des triplon doublon blocage ou meme gagnage
 
 	public int eval0_2(Pion p) {
@@ -730,11 +746,11 @@ public class EtatP4 extends Etat {
 		return score;
 	}
 
-	
-	
+
+
 	public int coup_ligne_2(Pion p) {
-		
-		
+
+
 
 
 		// verif quel joueur est en train de jouer et on atribue le joueur opposant
@@ -776,8 +792,8 @@ public class EtatP4 extends Etat {
 				break;
 			case 4:
 				break;
-				default:
-					break;
+			default:
+				break;
 			}
 		}
 
@@ -807,4 +823,24 @@ public class EtatP4 extends Etat {
 		return idem;
 	}
 	 */
+	
+	public int eval0_3(EtatP4 e, Joueur p) {
+		int coupJcourant = 0;
+		coupJcourant += coupLigne(e.getPion(), getJcourant());
+		coupJcourant += coupColonne(e.getPion(),getJcourant());
+		coupJcourant += coupDiagonaleBGHD(e.getPion(),getJcourant());
+		coupJcourant += coupDiagonaleHGBD(e.getPion(),getJcourant());
+
+		int coupGagnantAdversaire = 0;
+		coupGagnantAdversaire += coupLigne(e.getPion(),p);
+		coupGagnantAdversaire += coupColonne(e.getPion(),p);
+		coupGagnantAdversaire += coupDiagonaleBGHD(e.getPion(),p);
+		coupGagnantAdversaire += coupDiagonaleHGBD(e.getPion(),p);
+		
+		System.out.println(getJcourant().getNom() + ": "+coupJcourant + "***" + coupGagnantAdversaire);
+
+		return coupJcourant - coupGagnantAdversaire;
+
+	}
+
 }
