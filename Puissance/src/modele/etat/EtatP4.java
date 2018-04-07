@@ -257,13 +257,13 @@ public void poserJetton(Joueur j, Jeu jeu){
 			indiceColone = sc.nextInt();
 		}
 		int k = 0;
-		if(0 < indiceColone && indiceColone < 7 ){
+		if(0 < indiceColone && indiceColone < 8 ){
 			indiceColone = indiceColone - 1;
 			valide = true;
 		}
 
 		EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
-		if(!j.getNom().equals("IA") && indiceColone < 7 && this.plateau[0][indiceColone] != 0 &&
+		if(this.plateau[0][indiceColone] != 0 &&
 					this.plateau[1][indiceColone] != 0 && 
 					this.plateau[2][indiceColone] != 0 && 
 					this.plateau[3][indiceColone] != 0 && 
@@ -637,7 +637,6 @@ public int coupDiagonaleHGBD(Pion p) {
 * Diagonale qui part du bas a gauche et qui finit en haut a droite
 */
 public int coupDiagonaleBGHD(Pion p) {
-	System.out.println(" wallah la mere a  ");
 
 	// verif quel joueur est en train de jouer et on atribue le joueur opposant
 	int joueur;
