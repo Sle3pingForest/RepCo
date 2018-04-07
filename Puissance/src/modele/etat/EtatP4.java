@@ -742,7 +742,6 @@ public class EtatP4 extends Etat {
 			opposant = 1;
 			joueur = 2;
 		}
-		
 		// nb de coup gagnant en ligne par rapport à un pion
 		int nb = 0, gagnant =0, vide =0, consecutif = 0;
 		int score = 0, compteur = 1;
