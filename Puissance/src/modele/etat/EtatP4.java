@@ -288,7 +288,7 @@ public void poserJetton(Joueur j, Jeu jeu){
 				Pion p = new Pion(k+1, indiceColone);
 				j.setNbCoupJoue(1);
 				estJouer = true;
-				((JoueurP4)j).ajouterPion(p);
+				//((JoueurP4)j).ajouterPion(p);
 
 
 			}
@@ -305,7 +305,7 @@ public void poserJetton(Joueur j, Jeu jeu){
 				Pion p = new Pion(k, indiceColone);
 				j.setNbCoupJoue(1);
 				estJouer = true;
-				((JoueurP4)j).ajouterPion(p);
+				//((JoueurP4)j).ajouterPion(p);
 			}
 			k++;
 		}
