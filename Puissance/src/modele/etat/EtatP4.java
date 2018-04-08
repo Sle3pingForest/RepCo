@@ -262,29 +262,37 @@ public class EtatP4 extends Etat {
 	@Override
 	public void poserJetton(Joueur j, Jeu jeu){
 
-
+		setJcourant(j);
 		boolean estJouer = false;
 		boolean valide = false;
 		int indiceColone = 1;
+		EtatP4 etatfavorable = null;
 		while(!valide){	
+			int k = 0;
 			if(!j.getNom().equals("IA")){
 				Scanner sc = new Scanner(System.in);
 				indiceColone = sc.nextInt();
-			}
-			int k = 0;
-			if(0 < indiceColone && indiceColone < 8 ){
-				indiceColone = indiceColone - 1;
-				valide = true;
-			}
 
-			if(this.plateau[0][indiceColone] != 0 &&
-					this.plateau[1][indiceColone] != 0 && 
-					this.plateau[2][indiceColone] != 0 && 
-					this.plateau[3][indiceColone] != 0 && 
-					this.plateau[4][indiceColone] != 0 &&
-					this.plateau[5][indiceColone] != 0){
-				System.out.println("full1");
-				valide = false;
+				System.out.println( " INDICE    "+ indiceColone + "    " + jcourant.getNom());
+
+				if(0 < indiceColone && indiceColone < 8 ){
+					indiceColone = indiceColone - 1;
+					valide = true;
+				}
+
+				if(this.plateau[0][indiceColone] != 0 &&
+						this.plateau[1][indiceColone] != 0 && 
+						this.plateau[2][indiceColone] != 0 && 
+						this.plateau[3][indiceColone] != 0 && 
+						this.plateau[4][indiceColone] != 0 &&
+						this.plateau[5][indiceColone] != 0){
+					System.out.println("full1 " +  indiceColone);
+					valide = false;
+				} 
+			} else {
+				valide = true;
+				etatfavorable = minimax(new EtatP4(jeu, j),1);
+				indiceColone = etatfavorable.getPion().getPosY();
 			}
 			while( k < this.plateau.length-1 && !estJouer && valide){
 
@@ -294,9 +302,8 @@ public class EtatP4 extends Etat {
 					//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
 					//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 					if(j.getNom().equals("IA")){
-						EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
-
 						
+
 						setValue(etatfavorable.getpIA().getPosX(),etatfavorable.getpIA().getPosY(),jcourant);
 					}
 					else{
@@ -315,7 +322,6 @@ public class EtatP4 extends Etat {
 					//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
 					//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 					if(j.getNom().equals("IA")){	
-						EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
 						setValue(etatfavorable.getpIA().getPosX(),etatfavorable.getpIA().getPosY(),jcourant);
 					}
 					else{
@@ -382,7 +388,7 @@ public class EtatP4 extends Etat {
 		int score_max , score_min;
 		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
 		int score = 0;
-		/*if(e.finJeu()){
+		if(e.finJeu()){
 			if(e.getGagant().getNom().equals("IA")){
 				return +1000;
 			}
@@ -390,16 +396,17 @@ public class EtatP4 extends Etat {
 				return -1000;
 			}
 			if(rempli()){return 0;}
-		}*/
+		}
 		if(c == 0){
-
-			return eval0_2(e.getPion());
+			int b = eval0_2(e.getPion());
+			//System.out.println(" PREMIER " +b + " num " + num);
+			return b;
 
 		}
 
 		emsembleEtat = successeur(e);
 
-
+		num++;
 		if(e.getJcourant().getNom().equals("IA")){
 			score_max = -1000;
 			for(EtatP4 p4 : emsembleEtat){
@@ -411,7 +418,9 @@ public class EtatP4 extends Etat {
 					p4.setJcourant(jeu.getJ1());
 				}
 				score_max = max(score_max,evaluation(c-1, p4));
+
 			}
+
 			return score_max;
 		}
 		else{
@@ -424,7 +433,9 @@ public class EtatP4 extends Etat {
 				} else {
 					p4.setJcourant(jeu.getJ1());
 				}
-				score_min = min(score_min,evaluation(c-1, p4));
+				int bb = evaluation(c-1, p4);
+				score_min = min(score_min,bb);
+
 			}
 
 			return score_min;
@@ -514,23 +525,39 @@ public class EtatP4 extends Etat {
 	public EtatP4 minimax(EtatP4 e, int c){
 
 		ArrayList<EtatP4> ensembleEtat = successeur(e);		
+		ArrayList<EtatP4> ensembleEtatAlea = new ArrayList<>();
 
-		
 
 		int  score_max = - 1000, score_min = 1000;
 		EtatP4 e_sortie = null;
 		//int score_max = -1000;
 		for(EtatP4 p4 : ensembleEtat){
-			JoueurP4 jj = (JoueurP4) jeu.getJ1();
+			//num++;
+			/*JoueurP4 jj = (JoueurP4) jeu.getJ1();
 			if (e.getJcourant() == jeu.getJ1()) jj = (JoueurP4) jeu.getJ2();
-			p4.setJcourant(jj);
+			p4.setJcourant(jj);*/
 			int prof = c*2;
 
 			int score = evaluation(prof, p4);
 			if(score >= score_max){
 				e_sortie = p4;
 				score_max = score ;
+				if (score > score_max) {
+					ensembleEtatAlea.clear();
+					ensembleEtatAlea.add(e_sortie);
+				} else {
+					ensembleEtatAlea.add(e_sortie);
+				}
+
 			}
+		}
+		int t = ensembleEtatAlea.size();
+		System.out.println( "taile " + t);
+		t--;
+		if (t > 0) {
+			int rand = (int)( Math.random() * (t - 0)) + 0;
+			System.out.println( " rand  " + rand);
+			e_sortie = ensembleEtatAlea.get(rand);
 		}
 		return e_sortie;
 	}
@@ -776,8 +803,8 @@ public class EtatP4 extends Etat {
 			}
 		}
 		return score;
-		
-		
+
+
 
 		/*
 		float tempsDepart=System.currentTimeMillis();
