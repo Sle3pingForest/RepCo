@@ -273,7 +273,7 @@ public class EtatP4 extends Etat {
 				Scanner sc = new Scanner(System.in);
 				indiceColone = sc.nextInt();
 
-				System.out.println( " INDICE    "+ indiceColone + "    " + jcourant.getNom());
+				//System.out.println( " INDICE    "+ indiceColone + "    " + jcourant.getNom());
 
 				if(0 < indiceColone && indiceColone < 8 ){
 					indiceColone = indiceColone - 1;
@@ -302,7 +302,7 @@ public class EtatP4 extends Etat {
 					//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
 					//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 					if(j.getNom().equals("IA")){
-						
+
 
 						setValue(etatfavorable.getpIA().getPosX(),etatfavorable.getpIA().getPosY(),jcourant);
 					}
@@ -388,7 +388,7 @@ public class EtatP4 extends Etat {
 		int score_max , score_min;
 		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
 		int score = 0;
-		if(e.finJeu()){
+		/*if(e.finJeu()){
 			if(e.getGagant().getNom().equals("IA")){
 				return +1000;
 			}
@@ -396,7 +396,7 @@ public class EtatP4 extends Etat {
 				return -1000;
 			}
 			if(rempli()){return 0;}
-		}
+		}*/
 		if(c == 0){
 			int b = eval0_2(e.getPion());
 			//System.out.println(" PREMIER " +b + " num " + num);
@@ -533,21 +533,24 @@ public class EtatP4 extends Etat {
 		//int score_max = -1000;
 		for(EtatP4 p4 : ensembleEtat){
 			//num++;
-			/*JoueurP4 jj = (JoueurP4) jeu.getJ1();
+			JoueurP4 jj = (JoueurP4) jeu.getJ1();
 			if (e.getJcourant() == jeu.getJ1()) jj = (JoueurP4) jeu.getJ2();
-			p4.setJcourant(jj);*/
+			p4.setJcourant(jj);
 			int prof = c*2;
 
 			int score = evaluation(prof, p4);
+			System.out.println( " PION " + p4.getPion().getPosY() +  "     y " + p4.getPion().getPosX() + "  score  "+ score);
 			if(score >= score_max){
-				e_sortie = p4;
-				score_max = score ;
+
 				if (score > score_max) {
 					ensembleEtatAlea.clear();
 					ensembleEtatAlea.add(e_sortie);
 				} else {
 					ensembleEtatAlea.add(e_sortie);
 				}
+				e_sortie = p4;
+				score_max = score ;
+
 
 			}
 		}
@@ -798,11 +801,51 @@ public class EtatP4 extends Etat {
 					v= coupDiagonaleHGBD_2(p);
 					if (v != Integer.MAX_VALUE) {
 						score += v;
+					} else {
+						score = v;
 					}
+				} else {
+					score = v;
 				}
+			} else {
+				score = v;
 			}
 		}
-		return score;
+
+		int scoreadverse = 0;
+		if ( score != Integer.MAX_VALUE) {
+			
+			Pion pp = new Pion(p.getPosX()+1, p.getPosY());
+			if (p.getPosX() < plateau.length -1) {
+				JoueurP4 jj = (JoueurP4) jeu.getJ1();
+				if (jcourant == jj ) jcourant = jeu.getJ2();
+
+
+
+				/*if ( jcourant == jeu.getJ2() ) this.getPlateau()[pp.getPosX()] [pp.getPosY()] = 1;
+				else this.getPlateau()[pp.getPosX()] [pp.getPosY()] = 2;*/
+
+				v =0;
+				scoreadverse =  coup_ligne_2(pp);
+				if (scoreadverse != Integer.MAX_VALUE) {
+					scoreadverse += v;
+					v= coupDiagonaleBGHD_2(pp);
+					if (v != Integer.MAX_VALUE) {
+						scoreadverse += v;
+						v= coupDiagonaleHGBD_2(pp);
+						if (v != Integer.MAX_VALUE) {
+							scoreadverse += v;
+						}
+					}
+				}
+				//this.getPlateau()[pp.getPosX()] [pp.getPosY()] = 0;
+			}
+		}
+
+		System.out.println( " score " + score + " \n  " + scoreadverse );
+
+
+		return score - scoreadverse;
 
 
 
@@ -1183,9 +1226,6 @@ public class EtatP4 extends Etat {
 			case 3:
 				score = Integer.MAX_VALUE; // on est dans la cas ou le pion placé donne un puissance 4
 				return score;
-			case 4:
-				// pas de cas 4 sinon cela veut dire que le joueur a deja place 4 pions aligne et aurait du deja gagne
-				break;
 			default:
 				break;
 			}
