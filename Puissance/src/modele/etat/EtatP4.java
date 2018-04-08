@@ -14,6 +14,7 @@ public class EtatP4 extends Etat {
 	protected JoueurP4 gagant;
 	protected int[][] plateau;
 	protected Pion pIA;
+	public EtatP4 ref;
 
 	public EtatP4(Jeu j) {
 		super(j);
@@ -27,10 +28,19 @@ public class EtatP4 extends Etat {
 	}
 
 
-	public EtatP4(Jeu j,Pion p, int [][] tab){
+	public EtatP4(Jeu j,Joueur jc,Pion p, int [][] tab){
 		super(j);
+		jcourant = jc;
 		this.plateau = tab;
 		this.pIA = p;
+		int i = p.getPosX();
+		int k = p.getPosY();
+		if(this.jcourant.getNom().equals(jeu.getJ2().getNom())){
+			this.plateau[i][k] = 1;
+		}
+		else{
+			this.plateau[i][k] = 2;
+		}
 	}
 
 	@Override
@@ -73,7 +83,7 @@ public class EtatP4 extends Etat {
 
 			}
 
-			for(int i = 0; i < this.getPlateau().length - 2; ++i){
+			for(int i = 0; i < this.getPlateau().length - 3; ++i){
 				for(int j = 0; j < this.getPlateau()[0].length -3; ++j){
 					if(this.getPlateau()[i][j] == 2 &&
 							this.getPlateau()[i+1][j+1] == 2 &&
@@ -197,16 +207,19 @@ public class EtatP4 extends Etat {
 			int [][] tabSuc = new int[ligne][colonne];
 			copyValeurTableau(tabSuc, etat.getPlateau());
 			while( j < ligne && !estPossible){
-				if(etat.getPlateau()[j][i] == 0){
+				
+				if(etat.getPlateau()[j][i] == 0 ){
+					
 					Pion p = new Pion(j, i);
-					EtatP4 etatSuc = new EtatP4(this.jeu,p, tabSuc);
+					
+					EtatP4 etatSuc = new EtatP4(this.jeu, etat.getJcourant(),p, tabSuc);
 					listeSuc.add(etatSuc);
 					estPossible = true;
+					 
 				}
 				j++;
 			}
 		}
-
 		return listeSuc;
 	}
 
@@ -264,7 +277,7 @@ public class EtatP4 extends Etat {
 				valide = true;
 			}
 
-			if(!j.getNom().equals("IA") && this.plateau[0][indiceColone] != 0 &&
+			if(this.plateau[0][indiceColone] != 0 &&
 					this.plateau[1][indiceColone] != 0 && 
 					this.plateau[2][indiceColone] != 0 && 
 					this.plateau[3][indiceColone] != 0 && 
@@ -282,7 +295,9 @@ public class EtatP4 extends Etat {
 					//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 					if(j.getNom().equals("IA")){
 						EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
-						setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
+						
+						System.out.println(etatfavorable.toString());
+						setValue(etatfavorable.getpIA().getPosX(),etatfavorable.getpIA().getPosY(),jcourant);
 					}
 					else{
 						setValue(k + 1,indiceColone,j);
@@ -301,7 +316,7 @@ public class EtatP4 extends Etat {
 					//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 					if(j.getNom().equals("IA")){	
 						EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),1);
-						setValue(etatfavorable.getPion().getPosX(),etatfavorable.getPion().getPosY(),jcourant);
+						setValue(etatfavorable.getpIA().getPosX(),etatfavorable.getpIA().getPosY(),jcourant);
 					}
 					else{
 						setValue(k,indiceColone,j);
@@ -324,7 +339,7 @@ public class EtatP4 extends Etat {
 	 * (non-Javadoc)
 	 * @see modele.etat.Etat#eval0()
 	 */
-	@Override
+	
 	/*public int eval0(EtatP4 e) {
 		// TODO Auto-generated method stub
 
@@ -342,6 +357,8 @@ public class EtatP4 extends Etat {
 
 		return coupGagnant;
 	}*/
+	
+	public static int num = 0;
 	public int eval0(EtatP4 e , Joueur j) {
 		// TODO Auto-generated method stub
 
@@ -350,6 +367,7 @@ public class EtatP4 extends Etat {
 		coupGagnant += coupColonne(e.getPion(),j);
 		coupGagnant += coupDiagonaleBGHD(e.getPion(),j);
 		coupGagnant += coupDiagonaleHGBD(e.getPion(),j);
+	
 
 		return coupGagnant;
 	}
@@ -360,9 +378,10 @@ public class EtatP4 extends Etat {
 	 * @return  entier : coup gagant
 	 */
 	public int evaluation(int c, EtatP4 e){
-
+		
+		int score_max , score_min;
 		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
-		int score, score_max = - 1000, score_min;
+		int score = 0;
 		if(e.finJeu()){
 			if(e.getGagant().getNom().equals("IA")){
 				return +1000;
@@ -373,8 +392,9 @@ public class EtatP4 extends Etat {
 			if(rempli()){return 0;}
 		}
 		if(c == 0){
-				//System.out.println(eval0(e, e.getJcourant()));
-				return eval0(e, e.getJcourant());
+			return eval0_2(e.getPion());
+			//System.out.println("hswxcwhcjwd     "+eval0(e, e.getJcourant()));
+				//return eval0(e, e.getJcourant());
 			/*if(e.getJcourant().equals(this.jeu.getJ1().getNom())){
 				return eval0_3(e, this.jeu.getJ2());
 			}
@@ -385,22 +405,36 @@ public class EtatP4 extends Etat {
 		}
 
 		emsembleEtat = successeur(e);
+		
+		
 		if(e.getJcourant().getNom().equals("IA")){
 			score_max = -1000;
 			for(EtatP4 p4 : emsembleEtat){
-				p4.setJcourant(e.getJcourant());
-				score_max = max(score_max,evaluation(c-1, p4));
+				//p4.setJcourant(e.getJcourant());
+
+				if ( jeu.getJ1().getNom().equals("IA")){
+					p4.setJcourant(jeu.getJ2());
+				} else {
+					p4.setJcourant(jeu.getJ1());
+				}
+				//System.out.println("hswxcwhcjwd     "+score_max);
+					score_max = max(score_max,evaluation(c-1, p4));
 			}
-			System.out.println("score max: " +score_max);
 			return score_max;
 		}
 		else{
-			score_min = +1000;
+			score_min = 1000;
 			for(EtatP4 p4 : emsembleEtat){
-				p4.setJcourant(e.getJcourant());
+				//p4.setJcourant(e.getJcourant());
+				
+				if ( !jeu.getJ1().getNom().equals("IA")){
+					p4.setJcourant(jeu.getJ2());
+				} else {
+					p4.setJcourant(jeu.getJ1());
+				}
 				score_min = min(score_min,evaluation(c-1, p4));
 			}
-			System.out.println("score min " + score_min);
+			
 			return score_min;
 		}
 	}
@@ -437,7 +471,7 @@ public class EtatP4 extends Etat {
 	public int evaluationAlphaBeta(int c, EtatP4 e, int alpha, int beta){
 
 		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
-		int score, score_max, score_min;
+		int score, score_max=-1000, score_min;
 		if(e.finJeu()){
 			if(e.getGagant().getNom().equals("IA")){
 				return +1000;
@@ -452,6 +486,8 @@ public class EtatP4 extends Etat {
 		}
 
 		emsembleEtat = successeur(e);
+		
+
 		if(e.getJcourant().getNom().equals("IA")){
 			score_max = -1000;
 			for(EtatP4 p4 : emsembleEtat){
@@ -464,7 +500,7 @@ public class EtatP4 extends Etat {
 			return score_max;
 		}
 		else{
-
+			
 			score_min = +1000;
 			for(EtatP4 p4 : emsembleEtat){
 				score_min = min(score_min,evaluation(c-1, p4));
@@ -485,16 +521,22 @@ public class EtatP4 extends Etat {
 	 */
 	public EtatP4 minimax(EtatP4 e, int c){
 
-		ArrayList<EtatP4> ensembleEtat = successeur(e);
+		ArrayList<EtatP4> ensembleEtat = successeur(e);		
+		
+	
+		int  score_max = - 1000, score_min = 1000;
 		EtatP4 e_sortie = null;
-		int score_max = -1000;
+		//int score_max = -1000;
 		for(EtatP4 p4 : ensembleEtat){
 			p4.setJcourant(e.getJcourant());
-			int score = evaluation(c, p4);
+			int prof = c*3;
+			int score = evaluation(prof, p4);
+			System.out.println(score + "    " +p4.getPion().getPosX() + "    "+ p4.getPion().getPosY() );
 			if(score >= score_max){
 				e_sortie = p4;
-				System.out.println(score + "**" + score_max);
-				score_max = score;
+				/*System.out.println(score);
+				System.out.println(p4.getpIA().getPosX() + "***" + p4.getpIA().getPosY());*/
+				score_max = score ;
 			}
 		}
 		
@@ -532,20 +574,24 @@ public class EtatP4 extends Etat {
 
 		// borne correspondant soit aux limite de tableau
 		int borneGauche = 0, borneDroite = 6;
-
-		if (p.getPosX() - 3 >= 0) borneGauche = p.getPosX()-3; 
-		if (p.getPosX() + 3 < plateau.length) borneDroite = p.getPosX()+3; 
+		if (p.getPosY() - 3 >= 0) borneGauche = p.getPosY()-3; 
+		if (p.getPosY() + 3 < plateau[0].length) borneDroite = p.getPosY()+3; 
 
 		for (int i = borneGauche; i <= borneDroite - 3; i++) {
 			boolean ligneGagnante = true;
 
 			for (int j = i; j < i+4; j++) {
 				// on regarde si c'est un pion adverse 
-				if ( plateau[i][p.getPosY()] == joueur) ligneGagnante = false;
+				
+				
+				if ( plateau[p.getPosX()][j] == joueur) ligneGagnante = false;
+				
+			/*	if ( p.getPosY() == 3) {
+					System.out.println( " uuuuuuuu  " +  plateau[p.getPosX()][j] + "    " );
+				}*/ 
 			}
 			if (ligneGagnante) nb++;
 		}
-
 		return nb;
 	}
 
@@ -562,15 +608,15 @@ public class EtatP4 extends Etat {
 		// borne correspondant soit aux limite de tableau
 		int borneGauche = 0, borneDroite = 5;
 
-		if (p.getPosY() - 3 >= 0) borneGauche = p.getPosY()-3; 
-		if (p.getPosY() + 3 < plateau[0].length) borneDroite = p.getPosY()+3; 
+		if (p.getPosX() - 3 >= 0) borneGauche = p.getPosX()-3; 
+		if (p.getPosX() + 3 < plateau.length) borneDroite = p.getPosX()+3; 
 
 		for (int i = borneGauche; i <= borneDroite - 3; i++) {
 			boolean ligneGagnante = true;
 
 			for (int j = i; j < i+4; j++) {
 				// on regarde si c'est un pion adverse 
-				if ( plateau[p.getPosX()][j] == joueur) ligneGagnante = false;
+				if ( plateau[j][p.getPosY()] == joueur) ligneGagnante = false;
 			}
 			if (ligneGagnante) nb++;
 		}
@@ -598,29 +644,29 @@ public class EtatP4 extends Etat {
 
 
 		// calcul borne diago Haut gauche
-		if ( p.getPosX()-3 >= 0  && p.getPosY() + 3 < plateau[0].length) {
-			borneGaucheX = p.getPosX() - 3;
-			borneGaucheY = p.getPosY() + 3;
+		if ( p.getPosY()-3 >= 0  && p.getPosX() + 3 < plateau.length) {
+			borneGaucheX = p.getPosY() - 3;
+			borneGaucheY = p.getPosX() + 3;
 		} else {
-			int min = Math.min( p.getPosX() , plateau[0].length - 1 - p.getPosY());
+			int min = Math.min( p.getPosY() , plateau.length - 1 - p.getPosX());
 
-			borneGaucheX = p.getPosX() - min;
-			borneGaucheY = p.getPosY() + min;
+			borneGaucheX = p.getPosY() - min;
+			borneGaucheY = p.getPosX() + min;
 		}
 
 
 
 		// calcul borne diago Bas droite 
-		if ( p.getPosY()-3 >= 0  && p.getPosX() + 3 < plateau.length) {
-			borneDroiteX = p.getPosX() + 3;
-			borneDroiteY = p.getPosY() - 3;
+		if ( p.getPosX()-3 >= 0  && p.getPosY() + 3 < plateau[0].length) {
+			borneDroiteX = p.getPosY() + 3;
+			borneDroiteY = p.getPosX() - 3;
 		} else {
 
 
-			int min = Math.min( plateau.length - 1 - p.getPosX()  , p.getPosY());
+			int min = Math.min( plateau[0].length - 1 - p.getPosY()  , p.getPosX());
 
-			borneDroiteX = p.getPosX() + min;
-			borneDroiteY = p.getPosY() - min;
+			borneDroiteX = p.getPosY() + min;
+			borneDroiteY = p.getPosX() - min;
 		}
 
 		// longueur de la diagonale
@@ -632,7 +678,7 @@ public class EtatP4 extends Etat {
 			ltest.clear();
 			for (int j = i; j < i+4; j++) {
 
-				if ( plateau[borneGaucheX + j][ borneGaucheY - j] == joueur) ligneGagnante = false;
+				if ( plateau[ borneGaucheY - j][borneGaucheX + j] == joueur) ligneGagnante = false;
 				ltest.add(new Pion(borneGaucheX+j, borneGaucheY+j));
 			}
 			//System.out.println();
@@ -665,37 +711,37 @@ public class EtatP4 extends Etat {
 
 
 		// calcul borne diago gauche
-		if ( p.getPosX()-3 >= 0  && p.getPosY() - 3 >= 0) {
-			borneGaucheX = p.getPosX() - 3;
-			borneGaucheY = p.getPosY() - 3;
+		if ( p.getPosY()-3 >= 0  && p.getPosX() - 3 >= 0) {
+			borneGaucheX = p.getPosY() - 3;
+			borneGaucheY = p.getPosX() - 3;
 		} else {
-			int min = Math.min( p.getPosX() , p.getPosY());
+			int min = Math.min( p.getPosY() , p.getPosX());
 
-			borneGaucheX = p.getPosX() - min;
-			borneGaucheY = p.getPosY() - min;
+			borneGaucheX = p.getPosY() - min;
+			borneGaucheY = p.getPosX() - min;
 		}
 
 
 		// calcul borne diago droite 
-		if ( p.getPosY()+3 < plateau[0].length  && p.getPosX() + 3 < plateau.length) {
-			borneDroiteX = p.getPosX() + 3;
-			borneDroiteY = p.getPosY() + 3;
+		if ( p.getPosX()+3 < plateau.length  && p.getPosY() + 3 < plateau[0].length) {
+			borneDroiteX = p.getPosY() + 3;
+			borneDroiteY = p.getPosX() + 3;
 		} else {
 
-			int min = Math.min( plateau.length - 1 - p.getPosX() , plateau[0].length - 1 - p.getPosY() );
+			int min = Math.min( plateau[0].length - 1 - p.getPosY() , plateau.length - 1 - p.getPosX() );
 
-			borneDroiteX = p.getPosX() + min;
-			borneDroiteY = p.getPosY() + min;
+			borneDroiteX = p.getPosY() + min;
+			borneDroiteY = p.getPosX() + min;
 		}
 
 		// longueur de la diagonale
-		int distance = borneDroiteX - borneGaucheX; 
+		int distance = Math.min(borneDroiteX - borneGaucheX,borneDroiteY - borneGaucheY) ; 
 
 		for (int i = 0; i <= distance - 3; i++) {
 			boolean ligneGagnante = true;
 
 			for (int j = i; j < i+4; j++) {
-				if ( plateau[borneGaucheX + i][ borneGaucheY + i] == joueur) ligneGagnante = false;
+					if ( plateau[ borneGaucheY + j][borneGaucheX + j] == joueur) ligneGagnante = false;
 			}
 			if (ligneGagnante) nb++;
 		}
@@ -732,16 +778,10 @@ public class EtatP4 extends Etat {
 
 		int score = 0;
 
-		/* ligne
-		 * clonne
-		 * diago ghdb
-		 * diago gb dh
-		 */
-
-
-
-
-
+		score += coup_ligne_2(p);
+		score += coupColonne_2(p);
+		score += coupDiagonaleBGHD_2(p);
+		score += coupDiagonaleHGBD_2(p);
 
 		return score;
 	}
@@ -751,7 +791,37 @@ public class EtatP4 extends Etat {
 	public int coup_ligne_2(Pion p) {
 
 
+		// borne correspondant soit aux limite de tableau
+		int borneGauche = 0, borneDroite = 6;
 
+		if (p.getPosY() - 3 >= 0) borneGauche = p.getPosY()-3; 
+		if (p.getPosY() + 3 < plateau[0].length) borneDroite = p.getPosY()+3; 
+
+		int score = score_ligne_colonne_2(borneGauche, borneDroite, p, true);
+
+		return score;
+	}
+
+	
+	
+	public int coupColonne_2(Pion p) {
+
+		// nb de coup gagnant en ligne par rapport Ã  un pion
+		int score = 0;
+
+		// borne correspondant soit aux limite de tableau
+		int borneGauche = 0, borneDroite = 5;
+
+		if (p.getPosX() - 3 >= 0) borneGauche = p.getPosX()-3; 
+		if (p.getPosX() + 3 < plateau.length) borneDroite = p.getPosX()+3; 
+
+		score = score_ligne_colonne_2(borneGauche, borneDroite, p, false);
+		
+		return score;
+	}
+	
+
+	public int score_ligne_colonne_2(int borneGauche, int borneDroite, Pion p, boolean ligne) {
 
 		// verif quel joueur est en train de jouer et on atribue le joueur opposant
 		int joueur = 1, opposant = 2;
@@ -759,47 +829,308 @@ public class EtatP4 extends Etat {
 			opposant = 1;
 			joueur = 2;
 		}
+
 		// nb de coup gagnant en ligne par rapport Ã  un pion
-		int nb = 0, gagnant =0, vide =0, consecutif = 0;
-		int score = 0, compteur = 1;
+		int nb = 0, gagnant =0, vide =0, pionadverse = 0;
+		int score = 0, compteur = 0;
+		int tab[] = new int[4];
 
-		// borne correspondant soit aux limite de tableau
-		int borneGauche = 0, borneDroite = 7;
-
-		if (p.getPosX() - 3 > 0) borneGauche = p.getPosX()-3; 
-		if (p.getPosX() + 3 < plateau.length) borneDroite = p.getPosX()+3; 
+		// Calcul du score sur la ligne
 
 		for (int i = borneGauche; i <= borneDroite - 3; i++) {
 			boolean ligneGagnante = true;
-			compteur = 1;
+			tab = new int[4];
+			nb = 0;
+			compteur = 0;
 			vide =0;
-			consecutif = 0;
+			pionadverse = 0;
 
 			for (int j = i; j < i+4; j++) {
-				// on regarde si c'est un pion adverse 
-				if ( plateau[i][p.getPosY()] == opposant) ligneGagnante = false;
-				else if ( plateau[i][p.getPosY()] == joueur){
-					compteur++;
+				if (ligne) {
+					// on regarde si c'est un pion adverse 
+					
+					if (plateau[p.getPosX()][j] == opposant) {
+						tab[nb] = opposant;
+						pionadverse++;
+						ligneGagnante = false;
+					} else if ( plateau[p.getPosX()][j] == joueur){
+						tab[nb] = joueur;
+						compteur++;
+					} else { 
+						vide++;
+						tab[nb] = 0;
+					}
+				} else {
+					// on regarde si c'est un pion adverse 
+					if ( plateau[j][p.getPosY()] == opposant) {
+						tab[nb] = opposant;
+						pionadverse++;
+						ligneGagnante = false;
+					} else if ( plateau[j][p.getPosY()] == joueur){
+						tab[nb] = joueur;
+						compteur++;
+					} else { 
+						vide++;
+						tab[nb] = 0;
+					}
 				}
+				nb++;
 			}
-			if (ligneGagnante) nb++;
+
+			//if (ligneGagnante) nb++;
+
+			// calcul du score pour chaque cas 
 			switch (compteur) {
-			case 1:
+			case 0:
+				if (pionadverse == 3) score += 10000; // bloque un puissance 4 adverse
+
+				else if(pionadverse == 2) {
+					// on recupere lordre de placement des pions adverse
+					int adv1 = -1,adv2 = -1;
+					for (int k = i; k < i+4; i++) {
+						if (tab[k] == opposant) {
+							if (adv1 == -1) adv1 = k;
+							else adv2 = k;
+						}
+					}
+					// on regarde si le pion place est entre 2 pions adverse
+					if (adv1 < p.getPosX() && adv2 > p.getPosX() ) score += 11; 
+					else score += 7;
+				}
+
+				else if (pionadverse == 1) score += 5; // on se place a proximite a distance 4 max dun pion adverse
+				else score += 1; // place un pion sans pion adverse alentour
 				break;
-			case 2:
+
+			case 1:
+
+				if ( pionadverse == 2) score += 11;
+				else if(pionadverse == 1)  score += 5;
+				else score += 7;
+				break;
+
+			case 2:    
+
+				if ( vide == 2 ) score += 50; // cas ou il y a deja deux pions places sur une meme ligne et quun puissance 4 est encore possible
+				else if (pionadverse == 1) score += 1;
+				else  score += 1;
 				break;
 			case 3:
+				score += Integer.MAX_VALUE; // on est dans la cas ou le pion placé donne un puissance 4
 				break;
 			case 4:
+				// pas de cas 4 sinon cela veut dire que le joueur a deja place 4 pions aligne et aurait du deja gagne
 				break;
 			default:
 				break;
 			}
 		}
-
-
-		return 0;
+		return score;
 	}
+
+
+
+	
+	
+	/*
+	 * Diagonale qui part du haut a gauche et qui finit en bas a droite
+	 */
+	public int coupDiagonaleHGBD_2(Pion p) {
+
+
+		// borne correspondant soit aux limite de tableau
+		int borneGaucheX=0, borneGaucheY=5, borneDroiteX=6, borneDroiteY=0;
+
+
+		// calcul borne diago Haut gauche
+				if ( p.getPosY()-3 >= 0  && p.getPosX() + 3 < plateau.length) {
+					borneGaucheX = p.getPosY() - 3;
+					borneGaucheY = p.getPosX() + 3;
+				} else {
+					int min = Math.min( p.getPosY() , plateau.length - 1 - p.getPosX());
+
+					borneGaucheX = p.getPosY() - min;
+					borneGaucheY = p.getPosX() + min;
+				}
+
+
+
+				// calcul borne diago Bas droite 
+				if ( p.getPosX()-3 >= 0  && p.getPosY() + 3 < plateau[0].length) {
+					borneDroiteX = p.getPosY() + 3;
+					borneDroiteY = p.getPosX() - 3;
+				} else {
+
+
+					int min = Math.min( plateau[0].length - 1 - p.getPosY()  , p.getPosX());
+
+					borneDroiteX = p.getPosY() + min;
+					borneDroiteY = p.getPosX() - min;
+				}
+
+				// longueur de la diagonale
+				int distance = borneDroiteX - borneGaucheX; 
+
+		int score = score_diago_2(borneGaucheX, borneGaucheY, borneDroiteX, borneDroiteY, p, true);
+
+		return score;
+	}
+	
+	
+	/*
+	 * Diagonale qui part du bas a gauche et qui finit en haut a droite
+	 */
+	public int coupDiagonaleBGHD_2(Pion p) {
+
+		// borne correspondant soit aux limite de tableau
+		int borneGaucheX=0, borneGaucheY=0, borneDroiteX=6, borneDroiteY=5;
+
+
+
+				// calcul borne diago gauche
+				if ( p.getPosY()-3 >= 0  && p.getPosX() - 3 >= 0) {
+					borneGaucheX = p.getPosY() - 3;
+					borneGaucheY = p.getPosX() - 3;
+				} else {
+					int min = Math.min( p.getPosY() , p.getPosX());
+
+					borneGaucheX = p.getPosY() - min;
+					borneGaucheY = p.getPosX() - min;
+				}
+
+
+				// calcul borne diago droite 
+				if ( p.getPosX()+3 < plateau.length  && p.getPosY() + 3 < plateau[0].length) {
+					borneDroiteX = p.getPosY() + 3;
+					borneDroiteY = p.getPosX() + 3;
+				} else {
+
+					int min = Math.min( plateau[0].length - 1 - p.getPosY() , plateau.length - 1 - p.getPosX() );
+
+					borneDroiteX = p.getPosY() + min;
+					borneDroiteY = p.getPosX() + min;
+				}
+
+				// longueur de la diagonale
+				int distance = Math.min(borneDroiteX - borneGaucheX,borneDroiteY - borneGaucheY) ; 
+
+		int score = score_diago_2(borneGaucheX, borneGaucheY, borneDroiteX, borneDroiteY, p, false);
+
+		return score;
+	}
+	
+	
+	public int score_diago_2(int borneGaucheX, int borneGaucheY, int borneDroiteX, int borneDroiteY, Pion p, boolean diagoHaute) {
+
+		// verif quel joueur est en train de jouer et on atribue le joueur opposant
+		int joueur = 1, opposant = 2;
+		if(jcourant.getNom().equals(this.jeu.getJ1().getNom().toString())) {
+			opposant = 1;
+			joueur = 2;
+		}
+
+		// nb de coup gagnant en ligne par rapport Ã  un pion
+		int nb = 0, gagnant =0, vide =0, pionadverse = 0;
+		int score = 0, compteur = 0;
+		int tab[] = new int[4];
+
+		// Calcul du score sur la ligne
+		// longueur de la diagonale
+				int distance = Math.min(borneDroiteX - borneGaucheX,borneDroiteY - borneGaucheY) ; 
+				
+				
+				
+
+		for (int i = 0; i <= distance - 3; i++) {
+			boolean ligneGagnante = true;
+			tab = new int[4];
+			nb = 0;
+			compteur = 0;
+			vide =0;
+			pionadverse = 0;
+
+			for (int j = i; j < i+4; j++) {
+				if (diagoHaute) {
+					// on regarde si c'est un pion adverse 
+					if ( plateau[ borneGaucheY + j][borneGaucheX + j] == opposant) {
+						tab[nb] = opposant;
+						pionadverse++;
+						ligneGagnante = false;
+					} else if ( plateau[ borneGaucheY + j][borneGaucheX + j] == joueur){
+						tab[nb] = joueur;
+						compteur++;
+					} else { 
+						vide++;
+						tab[nb] = 0;
+					}
+				} else {
+					// on regarde si c'est un pion adverse 
+					if ( plateau[ borneGaucheY + j][borneGaucheX + j] == opposant) {
+						tab[nb] = opposant;
+						pionadverse++;
+						ligneGagnante = false;
+					} else if ( plateau[ borneGaucheY + j][borneGaucheX + j] == joueur){
+						tab[nb] = joueur;
+						compteur++;
+					} else { 
+						vide++;
+						tab[nb] = 0;
+					}
+				}
+				nb++;
+			}
+
+			//if (ligneGagnante) nb++;
+
+			// calcul du score pour chaque cas 
+			switch (compteur) {
+			case 0:
+				if (pionadverse == 3) score += 10000; // bloque un puissance 4 adverse
+
+				else if(pionadverse == 2) {
+					// on recupere lordre de placement des pions adverse
+					int adv1 = -1,adv2 = -1;
+					for (int k = i; k < i+4; i++) {
+						if (tab[k] == opposant) {
+							if (adv1 == -1) adv1 = k;
+							else adv2 = k;
+						}
+					}
+					// on regarde si le pion place est entre 2 pions adverse
+					if (adv1 < p.getPosX() && adv2 > p.getPosX() ) score += 11; 
+					else score += 7;
+				}
+
+				else if (pionadverse == 1) score += 5; // on se place a proximite a distance 4 max dun pion adverse
+				else score += 1; // place un pion sans pion adverse alentour
+				break;
+
+			case 1:
+
+				if ( pionadverse == 2) score += 11;
+				else if(pionadverse == 1)  score += 5;
+				else score += 7;
+				break;
+
+			case 2:    
+
+				if ( vide == 2 ) score += 50; // cas ou il y a deja deux pions places sur une meme ligne et quun puissance 4 est encore possible
+				else if (pionadverse == 1) score += 1;
+				else  score += 1;
+				break;
+			case 3:
+				score += Integer.MAX_VALUE; // on est dans la cas ou le pion placé donne un puissance 4
+				break;
+			case 4:
+				// pas de cas 4 sinon cela veut dire que le joueur a deja place 4 pions aligne et aurait du deja gagne
+				break;
+			default:
+				break;
+			}
+		}
+		return score;
+	}
+
 
 
 	/*
