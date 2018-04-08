@@ -420,6 +420,7 @@ public class EtatP4 extends Etat {
 				//System.out.println("hswxcwhcjwd     "+score_max);
 					score_max = max(score_max,evaluation(c-1, p4));
 			}
+			System.out.println(score_max);
 			return score_max;
 		}
 		else{
@@ -528,20 +529,16 @@ public class EtatP4 extends Etat {
 		EtatP4 e_sortie = null;
 		//int score_max = -1000;
 		for(EtatP4 p4 : ensembleEtat){
-			p4.setJcourant(e.getJcourant());
-			int prof = c*3;
+			JoueurP4 jj = (JoueurP4) jeu.getJ1();
+			if (e.getJcourant() == jeu.getJ1()) jj = (JoueurP4) jeu.getJ2();
+			p4.setJcourant(jj);
+			int prof = c*2;
 			int score = evaluation(prof, p4);
-			System.out.println(score + "    " +p4.getPion().getPosX() + "    "+ p4.getPion().getPosY() );
 			if(score >= score_max){
 				e_sortie = p4;
-				/*System.out.println(score);
-				System.out.println(p4.getpIA().getPosX() + "***" + p4.getpIA().getPosY());*/
 				score_max = score ;
 			}
 		}
-		
-		
-		
 		return e_sortie;
 	}
 
@@ -777,12 +774,39 @@ public class EtatP4 extends Etat {
 	public int eval0_2(Pion p) {
 
 		int score = 0;
+		/*
+		float tempsDepart=System.currentTimeMillis();
+		score += coup_ligne_2(p);
+		float tempsFin = System.currentTimeMillis();
+	System.out.println(" temps 1 " +( tempsFin ) + "   " +  tempsDepart);
+		
+		tempsDepart=System.currentTimeMillis();
+		score += coupColonne_2(p);
+
+		tempsFin = System.currentTimeMillis();
+		System.out.println(" temps 2 " +( tempsFin ) + "   " +  tempsDepart);*/
+		/*
+		
+		tempsDepart=System.currentTimeMillis();
+		score += coupDiagonaleBGHD_2(p);
+		tempsFin = System.currentTimeMillis();
+		System.out.println(" temps 2 " +( tempsFin ) + "   " +  tempsDepart);
+		
+		
+		
+
+		tempsDepart=System.currentTimeMillis();
+		score += coupDiagonaleHGBD_2(p);
+		tempsFin = System.currentTimeMillis();
+		System.out.println(" temps 4 " +( tempsFin ) + "   " +  tempsDepart);*/
+
 
 		score += coup_ligne_2(p);
 		score += coupColonne_2(p);
 		score += coupDiagonaleBGHD_2(p);
 		score += coupDiagonaleHGBD_2(p);
-
+		
+		
 		return score;
 	}
 
@@ -833,13 +857,12 @@ public class EtatP4 extends Etat {
 		// nb de coup gagnant en ligne par rapport à un pion
 		int nb = 0, gagnant =0, vide =0, pionadverse = 0;
 		int score = 0, compteur = 0;
-		int tab[] = new int[4];
+		
 
 		// Calcul du score sur la ligne
 
 		for (int i = borneGauche; i <= borneDroite - 3; i++) {
-			boolean ligneGagnante = true;
-			tab = new int[4];
+			int tab[] = new int[4],tabPos[] = new int[4];
 			nb = 0;
 			compteur = 0;
 			vide =0;
@@ -852,7 +875,6 @@ public class EtatP4 extends Etat {
 					if (plateau[p.getPosX()][j] == opposant) {
 						tab[nb] = opposant;
 						pionadverse++;
-						ligneGagnante = false;
 					} else if ( plateau[p.getPosX()][j] == joueur){
 						tab[nb] = joueur;
 						compteur++;
@@ -865,7 +887,6 @@ public class EtatP4 extends Etat {
 					if ( plateau[j][p.getPosY()] == opposant) {
 						tab[nb] = opposant;
 						pionadverse++;
-						ligneGagnante = false;
 					} else if ( plateau[j][p.getPosY()] == joueur){
 						tab[nb] = joueur;
 						compteur++;
@@ -874,6 +895,7 @@ public class EtatP4 extends Etat {
 						tab[nb] = 0;
 					}
 				}
+				tabPos[nb] = j;
 				nb++;
 			}
 
@@ -882,20 +904,30 @@ public class EtatP4 extends Etat {
 			// calcul du score pour chaque cas 
 			switch (compteur) {
 			case 0:
-				if (pionadverse == 3) score += 10000; // bloque un puissance 4 adverse
+				if (pionadverse == 3) score += 100000; // bloque un puissance 4 adverse
 
 				else if(pionadverse == 2) {
 					// on recupere lordre de placement des pions adverse
 					int adv1 = -1,adv2 = -1;
-					for (int k = i; k < i+4; i++) {
+					
+					for (int k = 0; k < 4; k++) {
 						if (tab[k] == opposant) {
-							if (adv1 == -1) adv1 = k;
-							else adv2 = k;
+							if (adv1 == -1) adv1 = tabPos[k];
+							else {
+								adv2 = tabPos[k];
+								
+							}
 						}
 					}
 					// on regarde si le pion place est entre 2 pions adverse
-					if (adv1 < p.getPosX() && adv2 > p.getPosX() ) score += 11; 
-					else score += 7;
+					if (ligne) {
+						 if (adv1 < p.getPosY() && adv2 > p.getPosY() ) score += 11; 
+						 else  score += 7;
+					} else {
+						if (adv1 < p.getPosX() && adv2 > p.getPosX() ) score += 11; 
+						else  score += 7;
+					}
+					
 				}
 
 				else if (pionadverse == 1) score += 5; // on se place a proximite a distance 4 max dun pion adverse
@@ -918,9 +950,9 @@ public class EtatP4 extends Etat {
 			case 3:
 				score += Integer.MAX_VALUE; // on est dans la cas ou le pion plac� donne un puissance 4
 				break;
-			case 4:
+			/*case 4:
 				// pas de cas 4 sinon cela veut dire que le joueur a deja place 4 pions aligne et aurait du deja gagne
-				break;
+				break;*/
 			default:
 				break;
 			}
@@ -1032,7 +1064,7 @@ public class EtatP4 extends Etat {
 		// nb de coup gagnant en ligne par rapport à un pion
 		int nb = 0, gagnant =0, vide =0, pionadverse = 0;
 		int score = 0, compteur = 0;
-		int tab[] = new int[4];
+		
 
 		// Calcul du score sur la ligne
 		// longueur de la diagonale
@@ -1042,8 +1074,7 @@ public class EtatP4 extends Etat {
 				
 
 		for (int i = 0; i <= distance - 3; i++) {
-			boolean ligneGagnante = true;
-			tab = new int[4];
+			int tab[] = new int[4],tabPos[] = new int[4];;
 			nb = 0;
 			compteur = 0;
 			vide =0;
@@ -1052,10 +1083,9 @@ public class EtatP4 extends Etat {
 			for (int j = i; j < i+4; j++) {
 				if (diagoHaute) {
 					// on regarde si c'est un pion adverse 
-					if ( plateau[ borneGaucheY + j][borneGaucheX + j] == opposant) {
+					if ( plateau[  borneGaucheY - j][borneGaucheX + j] == opposant) {
 						tab[nb] = opposant;
 						pionadverse++;
-						ligneGagnante = false;
 					} else if ( plateau[ borneGaucheY + j][borneGaucheX + j] == joueur){
 						tab[nb] = joueur;
 						compteur++;
@@ -1068,7 +1098,6 @@ public class EtatP4 extends Etat {
 					if ( plateau[ borneGaucheY + j][borneGaucheX + j] == opposant) {
 						tab[nb] = opposant;
 						pionadverse++;
-						ligneGagnante = false;
 					} else if ( plateau[ borneGaucheY + j][borneGaucheX + j] == joueur){
 						tab[nb] = joueur;
 						compteur++;
@@ -1077,6 +1106,7 @@ public class EtatP4 extends Etat {
 						tab[nb] = 0;
 					}
 				}
+				tabPos[nb] = borneGaucheX + j;
 				nb++;
 			}
 
@@ -1085,20 +1115,26 @@ public class EtatP4 extends Etat {
 			// calcul du score pour chaque cas 
 			switch (compteur) {
 			case 0:
-				if (pionadverse == 3) score += 10000; // bloque un puissance 4 adverse
+				if (pionadverse == 3) score += 100000; // bloque un puissance 4 adverse
 
 				else if(pionadverse == 2) {
 					// on recupere lordre de placement des pions adverse
 					int adv1 = -1,adv2 = -1;
-					for (int k = i; k < i+4; i++) {
+					
+					for (int k = 0; k < 4; k++) {
 						if (tab[k] == opposant) {
-							if (adv1 == -1) adv1 = k;
-							else adv2 = k;
+							if (adv1 == -1) adv1 = tabPos[k];
+							else {
+								adv2 = tabPos[k];
+								
+							}
 						}
 					}
 					// on regarde si le pion place est entre 2 pions adverse
-					if (adv1 < p.getPosX() && adv2 > p.getPosX() ) score += 11; 
-					else score += 7;
+					
+						 if (adv1 < p.getPosY() && adv2 > p.getPosY() ) score += 11; 
+						 else  score += 7;
+					
 				}
 
 				else if (pionadverse == 1) score += 5; // on se place a proximite a distance 4 max dun pion adverse
