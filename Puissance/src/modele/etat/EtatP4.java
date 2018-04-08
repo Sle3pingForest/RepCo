@@ -389,7 +389,7 @@ public class EtatP4 extends Etat {
 		int score_max , score_min;
 		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
 		int score = 0;
-		/*if(e.finJeu()){
+		if(e.finJeu()){
 			if(e.getGagant().getNom().equals("IA")){
 				return +1000;
 			}
@@ -397,7 +397,7 @@ public class EtatP4 extends Etat {
 				return -1000;
 			}
 			if(rempli()){return 0;}
-		}*/
+		}
 		if(c == 0){
 			
 			int b = eval0_2(e.getPion());
@@ -563,7 +563,7 @@ int ml = (c-1);
 				
 				if(score <= score_max){
 
-					System.out.println(" wallah " + p4);
+					System.out.println(" wallah " + score_max);
 					e_sortie = p4;
 					
 					if (score < score_max) {
@@ -851,16 +851,19 @@ int ml = (c-1);
 
 		int score = 0;
 		int v =0;
-		score = coup_ligne_2(p);
-		if (score != Integer.MAX_VALUE) {
+		score+= coupDiagonaleHGBD_2(p);
+		score+= coupDiagonaleBGHD_2(p);
+		score += coupColonne_2(p);
+		score += coup_ligne_2(p);
+		/*if (score < 999999) {
 			v = coupColonne_2(p);
-			if (v != Integer.MAX_VALUE) {
+			if (v < 999999) {
 				score += v;
 				v= coupDiagonaleBGHD_2(p);
-				if (v != Integer.MAX_VALUE) {
+				if (v < 999999) {
 					score += v;
 					v= coupDiagonaleHGBD_2(p);
-					if (v != Integer.MAX_VALUE) {
+					if (v < 999999) {
 						score += v;
 					} else {
 						score = v;
@@ -871,10 +874,10 @@ int ml = (c-1);
 			} else {
 				score = v;
 			}
-		}
+		}*/
 
 		int scoreadverse = 0;
-		if ( score != Integer.MAX_VALUE) {
+		if ( score < 999999) {
 
 			Pion pp = new Pion(p.getPosX()+1, p.getPosY());
 			if (p.getPosX() < plateau.length -1) {
@@ -888,17 +891,19 @@ int ml = (c-1);
 
 				v =0;
 				scoreadverse =  coup_ligne_2(pp);
-				if (scoreadverse != Integer.MAX_VALUE) {
+				scoreadverse+= coupDiagonaleBGHD_2(pp);
+				scoreadverse+= coupDiagonaleHGBD_2(pp);
+				/*if (scoreadverse < 999999) {
 					scoreadverse += v;
 					v= coupDiagonaleBGHD_2(pp);
-					if (v != Integer.MAX_VALUE) {
+					if (v < 999999) {
 						scoreadverse += v;
 						v= coupDiagonaleHGBD_2(pp);
-						if (v != Integer.MAX_VALUE) {
+						if (v < 999999) {
 							scoreadverse += v;
-						}
-					}
-				}
+						} else scoreadverse = v;
+					} else scoreadverse = v;
+				}else scoreadverse = v;*/
 				//this.getPlateau()[pp.getPosX()] [pp.getPosY()] = 0;
 			}
 		}
@@ -1036,7 +1041,7 @@ int ml = (c-1);
 			// calcul du score pour chaque cas 
 			switch (compteur) {
 			case 0:
-				if (pionadverse == 3) score += 100000; // bloque un puissance 4 adverse
+				if (pionadverse == 3) score += 10000; // bloque un puissance 4 adverse
 
 				else if(pionadverse == 2) {
 					// on recupere lordre de placement des pions adverse
@@ -1079,7 +1084,7 @@ int ml = (c-1);
 				else  score += 1;
 				break;
 			case 3:
-				score = Integer.MAX_VALUE; // on est dans la cas ou le pion placé donne un puissance 4
+				score = 999999; // on est dans la cas ou le pion placé donne un puissance 4
 				return score;
 				/*case 4:
 				// pas de cas 4 sinon cela veut dire que le joueur a deja place 4 pions aligne et aurait du deja gagne
@@ -1246,7 +1251,7 @@ int ml = (c-1);
 			// calcul du score pour chaque cas 
 			switch (compteur) {
 			case 0:
-				if (pionadverse == 3) score += 100000; // bloque un puissance 4 adverse
+				if (pionadverse == 3) score += 10000; // bloque un puissance 4 adverse
 
 				else if(pionadverse == 2) {
 					// on recupere lordre de placement des pions adverse
@@ -1286,7 +1291,7 @@ int ml = (c-1);
 				else  score += 1;
 				break;
 			case 3:
-				score = Integer.MAX_VALUE; // on est dans la cas ou le pion placé donne un puissance 4
+				score = 999999; // on est dans la cas ou le pion placé donne un puissance 4
 				return score;
 			default:
 				break;
