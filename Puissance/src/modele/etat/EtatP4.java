@@ -270,6 +270,7 @@ public class EtatP4 extends Etat {
 		while(!valide){	
 			int k = 0;
 			if(!j.getNom().equals("IA")){
+				System.out.print("Choisissez la colonne ou poser le pion: ");
 				Scanner sc = new Scanner(System.in);
 				indiceColone = sc.nextInt();
 
@@ -1084,7 +1085,7 @@ int ml = (c-1);
 				else  score += 1;
 				break;
 			case 3:
-				score = 999999; // on est dans la cas ou le pion placé donne un puissance 4
+				score = 999999; // on est dans la cas ou le pion placï¿½ donne un puissance 4
 				return score;
 				/*case 4:
 				// pas de cas 4 sinon cela veut dire que le joueur a deja place 4 pions aligne et aurait du deja gagne
@@ -1291,7 +1292,7 @@ int ml = (c-1);
 				else  score += 1;
 				break;
 			case 3:
-				score = 999999; // on est dans la cas ou le pion placé donne un puissance 4
+				score = 999999; // on est dans la cas ou le pion placï¿½ donne un puissance 4
 				return score;
 			default:
 				break;
