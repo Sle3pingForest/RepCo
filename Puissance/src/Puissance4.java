@@ -8,8 +8,11 @@ import modele.joueur.JoueurP4;
 
 
 public class Puissance4 {
+	
+	protected ArrayList<EtatP4> etatParcouru;
 
 	public Puissance4(){
+		etatParcouru = new ArrayList<>();
 		start();
 	}
 	public void start(){
@@ -60,6 +63,42 @@ public class Puissance4 {
 		e2 = new EtatP4(j2, j2.getJ1());
 		System.out.println("test2: egalite joueur " +  e.egalite(e2));*/
 
+	}
+	
+	
+	
+	public void selection (EtatP4 e)  {
+		
+		ArrayList<EtatP4> list = new ArrayList<>();
+		double max = -1;
+		EtatP4 choix;
+		if (etatParcouru.size() == 0) {
+			choix = e.choixRandom();
+			etatParcouru.add(choix);
+			
+
+			int size = etatParcouru.size() -1;
+			etatParcouru.get(size).marcheAleatoire();
+		}
+		else {
+			for (EtatP4 et : etatParcouru) {
+				if (et.bValeur() == max) list.add(et);
+				if (et.bValeur() > max) {
+					max = et.bValeur();
+					list.clear();
+					list.add(et);
+				}
+			}
+				
+			int taille = (list.size()- 1);
+			int r = (int) (Math.random() *  (taille -1)) ;
+			etatParcouru.add(list.get(r));
+			int size = etatParcouru.size() -1;
+			selection(etatParcouru.get(size));
+		}
+		
+		
+		
 	}
 
 	public static void main(String[] args){

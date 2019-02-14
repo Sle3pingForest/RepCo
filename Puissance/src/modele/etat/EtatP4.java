@@ -1,6 +1,7 @@
 package modele.etat;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 import modele.jeu.Jeu;
@@ -10,7 +11,6 @@ import modele.joueur.JoueurP4;
 
 public class EtatP4 extends Etat {
 
-	protected Joueur jcourant;
 	protected JoueurP4 gagant;
 	protected int[][] plateau;
 	protected Pion pIA;
@@ -26,8 +26,56 @@ public class EtatP4 extends Etat {
 		this.jcourant = jc;
 		this.plateau = j.getPlateau();
 	}
+	
 
+	
+	
+	public EtatP4 choixRandom() {
+		
+		ArrayList<EtatP4> ensembleEtat = successeur(this);		
+		int taille = (ensembleEtat.size()- 1);
+		int r = (int) (Math.random() *  (taille -1)) ;
+		
+		return ensembleEtat.get(r);
+	}
+	
+	public EtatP4 choixMaxBValeur() {
+		
+		ArrayList<EtatP4> ensembleEtat = successeur(this);		
+		int taille = (ensembleEtat.size()- 1);
+		int r = (int) (Math.random() *  (taille -1)) ;
+		
+		return ensembleEtat.get(r);
+	}
+	
+	
+	public int marcheAleatoire() {
+		
+		if (this.finJeu()) {
+			int score = this.evaluation(0, this);
+			this.recompense.add(score);
+			this.incremente();
+			return score;
+		}
+		else {
+			return  choixRandom().marcheAleatoire();
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
+	//////////////////////////        PARTIE L3                   //////////////////////////////////////////////////////////////
+	
+			
 	public EtatP4(Jeu j,Joueur jc,Pion p, int [][] tab){
 		super(j);
 		jcourant = jc;
@@ -173,7 +221,8 @@ public class EtatP4 extends Etat {
 				compt++;
 			}
 			egal = verif;
-		}
+		} 
+		//jusqu’à arriver à un nœud termin
 
 		return egal;
 	}
@@ -339,30 +388,13 @@ public class EtatP4 extends Etat {
 	}
 
 
-	/*
-	 * Parcours la liste de pion joué/placé
-	 * et compte le nombre de coup gagnant qu'il peut faire pour chaque
-	 * (non-Javadoc)
-	 * @see modele.etat.Etat#eval0()
-	 */
+	public void selection(EtatP4 init) {
+		
+		
+		
+		
+	}
 
-	/*public int eval0(EtatP4 e) {
-		// TODO Auto-generated method stub
-
-		int coupGagnant = 0;
-		//System.out.println(e.getJcourant());
-		for (Pion p : ((JoueurP4)e.getJcourant()).getLp()) {
-			coupGagnant += coupLigne(p);
-			coupGagnant += coupColonne(p);
-			coupGagnant += coupDiagonaleBGHD(p);
-			coupGagnant += coupDiagonaleHGBD(p);
-			System.out.println("Pour ce pion " + p.toString() + "  nombre de coup gagnant " + coupGagnant);
-			//setPion(p);
-
-		}
-
-		return coupGagnant;
-	}*/
 
 	public static int num = 0;
 	public int eval0(EtatP4 e , Joueur j) {
@@ -429,6 +461,7 @@ public class EtatP4 extends Etat {
 		}
 		else{
 			score_min = 1000;
+			//score_min = Integer.MIN_VALUE;
 			for(EtatP4 p4 : emsembleEtat){
 				//p4.setJcourant(e.getJcourant());
 
@@ -438,12 +471,13 @@ public class EtatP4 extends Etat {
 					p4.setJcourant(jeu.getJ1());
 				}
 				int bb = evaluation(c-1, p4);
-int ml = (c-1);
+				int ml = (c-1);
 				//System.out.print(" minn   " + bb + "    " + ml );
 				score_min = min(score_min,bb);
+				//score_min = max(score_min,bb);
 
 			}
-			System.out.println();
+			System.out.println(" score min  " + score_min);
 			return score_min;
 		}
 	}
