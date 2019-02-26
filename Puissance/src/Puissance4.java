@@ -24,6 +24,12 @@ public class Puissance4 {
 		System.out.println("test " + e.getJcourant().getNom());
 		int nb = 0;
 		selection(e, j.getJ1(), j.getJ2(), e.getJcourant());
+		selection(e, j.getJ1(), j.getJ2(), e.getJcourant());
+		selection(e, j.getJ1(), j.getJ2(), e.getJcourant());
+		selection(e, j.getJ1(), j.getJ2(), e.getJcourant());
+		for (EtatP4 ee : etatParcouru) {
+			System.out.println(ee.bValeur());
+		}
 		/*
 		boolean estRemplie = e.rempli();
 		while(!estRemplie){
@@ -78,13 +84,15 @@ public class Puissance4 {
 		double max = -1;
 		if (etatParcouru.size() == 0) {
 			etatParcouru.add(e);
-			etatParcouru.add(e.choixRandom(jc));
+			EtatP4 et = e.choixRandom(jc);
+			et.addParent(e);
+			etatParcouru.add(et);
 			
 			int size = etatParcouru.size() -1;
-			System.out.println(etatParcouru.get(size).marcheAleatoire(j1, j2, jc));
-			//etatParcouru.get(size).getNbSimu());
+			etatParcouru.get(size).addRecompense(etatParcouru.get(size).marcheAleatoire(j1, j2, jc));
+		
+			
 		}
-		/*
 		else {
 			ArrayList<Integer> indice = new ArrayList<>();
 			int index = 0;
@@ -104,7 +112,7 @@ public class Puissance4 {
 			int r = (int) (Math.random() *  (taille -1)) ;
 			selection(etatParcouru.get(indice.get(r)),j1, j2, jc);
 		}
-		*/
+		
 		
 	}
 
