@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
+import main.Puissance4;
 import modele.jeu.Jeu;
 import modele.jeu.Pion;
 import modele.joueur.Joueur;
@@ -431,7 +432,7 @@ public class EtatP4 extends Etat {
 				} 
 			} else {
 				valide = true;
-				etatfavorable = minimax(new EtatP4(jeu, j),1);
+				etatfavorable = Puissance4.selection(this, jeu.getJ1(), jeu.getJ2(), j);//minimax(new EtatP4(jeu, j),1);
 				indiceColone = etatfavorable.getPion().getPosY();
 			}
 			while( k < this.plateau.length-1 && !estJouer && valide){
