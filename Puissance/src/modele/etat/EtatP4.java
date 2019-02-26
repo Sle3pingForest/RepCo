@@ -30,12 +30,14 @@ public class EtatP4 extends Etat {
 
 	
 	
-	public EtatP4 choixRandom() {
+	public EtatP4 choixRandom(Joueur jc) {
 		
 		ArrayList<EtatP4> ensembleEtat = successeur(this);		
 		int taille = (ensembleEtat.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
-		
+		//ensembleEtat.get(r).affichage();
+		//System.out.println(jcourant.getNom());
+		ensembleEtat.get(r).setJcourant(jc);
 		return ensembleEtat.get(r);
 	}
 	
@@ -50,7 +52,6 @@ public class EtatP4 extends Etat {
 	
 	
 	public int marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
-		
 		if (this.finJeu()) {
 			int score = this.evaluation(0, this);
 			this.recompense.add(score);
@@ -58,12 +59,11 @@ public class EtatP4 extends Etat {
 			return score;
 		}
 		else {
-			EtatP4 etat = choixRandom();
-			etat.affichage();
-			System.out.println();
 			if (jc == j1)  jc = j2;
 			else jc = j1;
-			etat.setJcourant(jc);
+			EtatP4 etat = choixRandom(jc);
+			etat.affichage();
+			System.out.println();
 			return  etat.marcheAleatoire(j1, j2, jc);
 		}
 	}

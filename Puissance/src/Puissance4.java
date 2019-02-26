@@ -21,6 +21,7 @@ public class Puissance4 {
 		System.out.println("Joueur 1: " + j.getJ1().getNom() +" ******* Joueur 2: " + j.getJ2().getNom() );
 		j.setInitial();
 		EtatP4 e = new EtatP4(j, j.getJ1());
+		System.out.println("test " + e.getJcourant().getNom());
 		selection(e, j.getJ1(), j.getJ2(), e.getJcourant());
 		/*
 		boolean estRemplie = e.rempli();
@@ -73,14 +74,11 @@ public class Puissance4 {
 		
 		ArrayList<EtatP4> list = new ArrayList<>();
 		double max = -1;
-		EtatP4 choix;
 		if (etatParcouru.size() == 0) {
-			choix = e.choixRandom();
-			etatParcouru.add(choix);
-			
-
+			etatParcouru.add(e);
 			int size = etatParcouru.size() -1;
 			etatParcouru.get(size).marcheAleatoire(j1, j2, jc);
+			
 		}
 		else {
 			for (EtatP4 et : etatParcouru) {
