@@ -81,7 +81,7 @@ public abstract class Etat {
 	}
 	
 	public double bValeur() {
-		if (getNbSimu() == 0 || parent == null) return 0;
+		if (getNbSimu() == 0 || parent == null) return Integer.MIN_VALUE;
 		double bValeur = moyenne() + c * Math.sqrt( Math.log(parent.getNbSimu()) / getNbSimu());
 		if (!getMax()) return -bValeur;
 		return bValeur;

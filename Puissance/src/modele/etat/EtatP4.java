@@ -78,6 +78,30 @@ public class EtatP4 extends Etat {
 		return ensembleEtat.get(r);
 	}
 	
+	public EtatP4 choixNoeudMax() {
+		
+		double max = Integer.MIN_VALUE;
+		ArrayList<EtatP4> list = new ArrayList<>();
+		ArrayList<Integer> indice = new ArrayList<>();
+		int index = 0;
+		for (EtatP4 et : this.getListSucc()) {
+			if (et.bValeur() == max) list.add(et);
+			if (et.bValeur() > max ) {
+				max = et.bValeur();
+				list.clear();
+				indice.clear();
+				list.add(et);
+				indice.add(index);
+			}
+			index++;
+		}
+		
+		int taille = (list.size()- 1);
+		int r = (int) (Math.random() *  (taille -1)) ;
+		EtatP4 eCourant = list.get(r);
+		return eCourant;
+	}
+	
 	
 	public int marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
 		if (this.finJeu() || this.rempli2()) {
