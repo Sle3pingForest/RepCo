@@ -15,6 +15,7 @@ public class EtatP4 extends Etat {
 	protected int[][] plateau;
 	protected Pion pIA;
 	public EtatP4 ref;
+	protected ArrayList<EtatP4> listSucc = new ArrayList<>();
 
 	public EtatP4(Jeu j) {
 		super(j);
@@ -27,17 +28,44 @@ public class EtatP4 extends Etat {
 		this.plateau = j.getPlateau();
 	}
 	
+	public void createSuccesseur() {
+		Joueur jc = jeu.getJ1();
+		if (getJcourant().getNom() == jeu.getJ1().getNom()) jc = jeu.getJ2();
+		listSucc = successeur(this, jc);		
+	}
+	
+	public ArrayList<EtatP4> getListSucc() {
+		return listSucc;
+	}
 
-	
-	
+	public void setListSucc(ArrayList<EtatP4> listSucc) {
+		this.listSucc = listSucc;
+	}
+
 	public EtatP4 choixRandom(Joueur jc) {
 		
 		ArrayList<EtatP4> ensembleEtat = successeur(this, jc);		
 		int taille = (ensembleEtat.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
-		//ensembleEtat.get(r).affichage();
-		//System.out.println(jcourant.getNom());
 		ensembleEtat.get(r).setJcourant(jc);
+		ensembleEtat.get(r).setVisite(true);
+		jc.augmenterCoup();
+		return ensembleEtat.get(r);
+	}
+	
+	public EtatP4 choixEtatNonVisite() {
+		ArrayList<EtatP4> ensembleEtat = new ArrayList<>();
+		
+		for (EtatP4 e : listSucc) {
+			if ( e.getVisite() == false) {
+				ensembleEtat.add(e);
+			}
+		}
+		
+		int taille = (ensembleEtat.size()- 1);
+		int r = (int) (Math.random() *  (taille -1)) ;
+		ensembleEtat.get(r).setVisite(true);
+		this.getJcourant().augmenterCoup();
 		return ensembleEtat.get(r);
 	}
 	
@@ -52,7 +80,7 @@ public class EtatP4 extends Etat {
 	
 	
 	public int marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
-		if (this.finJeu()) {
+		if (this.finJeu() || this.rempli2()) {
 			int score = this.evaluation(0, this);
 			this.recompense.add(score);
 			this.incremente();
@@ -62,8 +90,6 @@ public class EtatP4 extends Etat {
 			if (jc == j1)  jc = j2;
 			else jc = j1;
 			EtatP4 etat = choixRandom(jc);
-			etat.affichage();
-			System.out.println();
 			return  etat.marcheAleatoire(j1, j2, jc);
 		}
 	}
@@ -191,6 +217,16 @@ public class EtatP4 extends Etat {
 		boolean j2 = this.jeu.getJ2().getNbCoupJoue() == (ligne*colonne)/2;
 		if ( j1 && j2) {
 			rempli = true;
+		}
+		return rempli;
+	}
+	
+	public boolean rempli2() {
+		boolean rempli = true;
+		for (int i = 0; i < 6; i++) {
+			for (int j = 0; j < 7; j++) {
+				if (plateau[i][j] == 0)rempli = false;
+			}
 		}
 		return rempli;
 	}

@@ -15,6 +15,8 @@ public abstract class Etat {
 	public final static double c = Math.sqrt(2);
 	protected Etat parent;
 	protected boolean max;
+	protected boolean estVisite = false;
+	protected int nbVisite;
 	
 	// ETAT racine
 	public Etat(Jeu j){
@@ -22,6 +24,7 @@ public abstract class Etat {
 		recompense = new ArrayList<>();
 		nbSimu = 0;
 		parent = null;
+		nbVisite = 0;
 	}
 	
 	// ETAT FILS
@@ -31,6 +34,7 @@ public abstract class Etat {
 		nbSimu = 0;
 		this.parent = parent;
 		max = !parent.getMax();
+		nbVisite = 0;
 	}
 	
 	
@@ -81,6 +85,22 @@ public abstract class Etat {
 		double bValeur = moyenne() + c * Math.sqrt( Math.log(parent.getNbSimu()) / getNbSimu());
 		if (!getMax()) return -bValeur;
 		return bValeur;
+	}
+	
+	public void setVisite(boolean b){
+		this.estVisite = b;
+	}
+	
+	public boolean getVisite(){
+		return this.estVisite;
+	}
+
+	public int getNbVisite() {
+		return nbVisite;
+	}
+
+	public void setNbVisite(int nbVisite) {
+		this.nbVisite = nbVisite;
 	}
 	
 
