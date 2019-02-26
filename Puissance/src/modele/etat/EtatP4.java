@@ -49,7 +49,7 @@ public class EtatP4 extends Etat {
 	}
 	
 	
-	public int marcheAleatoire() {
+	public int marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
 		
 		if (this.finJeu()) {
 			int score = this.evaluation(0, this);
@@ -58,7 +58,13 @@ public class EtatP4 extends Etat {
 			return score;
 		}
 		else {
-			return  choixRandom().marcheAleatoire();
+			EtatP4 etat = choixRandom();
+			etat.affichage();
+			System.out.println();
+			if (jc == j1)  jc = j2;
+			else jc = j1;
+			etat.setJcourant(jc);
+			return  etat.marcheAleatoire(j1, j2, jc);
 		}
 	}
 	

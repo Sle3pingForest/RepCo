@@ -21,30 +21,32 @@ public class Puissance4 {
 		System.out.println("Joueur 1: " + j.getJ1().getNom() +" ******* Joueur 2: " + j.getJ2().getNom() );
 		j.setInitial();
 		EtatP4 e = new EtatP4(j, j.getJ1());
-		e.affichage();
-		
+		selection(e, j.getJ1(), j.getJ2(), e.getJcourant());
+		/*
 		boolean estRemplie = e.rempli();
 		while(!estRemplie){
 			estRemplie = e.finJeu();
 			if(!e.finJeu()){
 				e.poserJetton(j.getJ1(), j);
-				e.affichage();
+
+				selection(e);
+				//e.affichage();
 			}
 			Joueur i = j.getJ1();
 			Joueur i2 = j.getJ2();
 			if(!e.finJeu()){
 				e.poserJetton(j.getJ2(),j);
-				e.affichage();
+
+				selection(e);
+				//e.affichage();
 			}
-			/*if(j.getJ1().getNbCoupJoue() + j.getJ2().getNbCoupJoue() == 42){
-				estRemplie = true;
-				System.out.println("end");
-			}*/
+			
 
 		}
+		
 		System.out.println(e.getGagant().getNom() + "a win");
 		System.out.println("end game");
-		
+		*/
 		
 		
 /*
@@ -67,7 +69,7 @@ public class Puissance4 {
 	
 	
 	
-	public void selection (EtatP4 e)  {
+	public void selection (EtatP4 e, Joueur j1, Joueur j2, Joueur jc)  {
 		
 		ArrayList<EtatP4> list = new ArrayList<>();
 		double max = -1;
@@ -78,7 +80,7 @@ public class Puissance4 {
 			
 
 			int size = etatParcouru.size() -1;
-			etatParcouru.get(size).marcheAleatoire();
+			etatParcouru.get(size).marcheAleatoire(j1, j2, jc);
 		}
 		else {
 			for (EtatP4 et : etatParcouru) {
@@ -94,7 +96,7 @@ public class Puissance4 {
 			int r = (int) (Math.random() *  (taille -1)) ;
 			etatParcouru.add(list.get(r));
 			int size = etatParcouru.size() -1;
-			selection(etatParcouru.get(size));
+			selection(etatParcouru.get(size),j1, j2, jc);
 		}
 		
 		
