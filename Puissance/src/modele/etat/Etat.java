@@ -29,7 +29,7 @@ public abstract class Etat {
 		this.jeu = j;
 		recompense = new ArrayList<>();
 		nbSimu = 0;
-		parent = parent;
+		this.parent = parent;
 		max = !parent.getMax();
 	}
 	

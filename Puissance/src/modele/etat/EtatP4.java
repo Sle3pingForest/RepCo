@@ -32,7 +32,7 @@ public class EtatP4 extends Etat {
 	
 	public EtatP4 choixRandom(Joueur jc) {
 		
-		ArrayList<EtatP4> ensembleEtat = successeur(this);		
+		ArrayList<EtatP4> ensembleEtat = successeur(this, jc);		
 		int taille = (ensembleEtat.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
 		//ensembleEtat.get(r).affichage();
@@ -252,6 +252,31 @@ public class EtatP4 extends Etat {
 	}
 
 
+	public ArrayList<EtatP4> successeur(EtatP4 etat, Joueur jc) {
+		ArrayList<EtatP4> listeSuc = new ArrayList<>();
+		int colonne = this.plateau[0].length;
+		int ligne = this.plateau.length;
+		for(int i = 0 ; i < colonne;++i){
+			int j = 0;
+			boolean estPossible = false;
+			int [][] tabSuc = new int[ligne][colonne];
+			copyValeurTableau(tabSuc, etat.getPlateau());
+			while( j < ligne && !estPossible){
+
+				if(etat.getPlateau()[j][i] == 0 ){
+
+					Pion p = new Pion(j, i);
+
+					EtatP4 etatSuc = new EtatP4(this.jeu, jc,p, tabSuc);
+					listeSuc.add(etatSuc);
+					estPossible = true;
+
+				}
+				j++;
+			}
+		}
+		return listeSuc;
+	}
 	public ArrayList<EtatP4> successeur(EtatP4 etat) {
 		ArrayList<EtatP4> listeSuc = new ArrayList<>();
 		int colonne = this.plateau[0].length;
