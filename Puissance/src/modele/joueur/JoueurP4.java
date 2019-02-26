@@ -12,6 +12,11 @@ public class JoueurP4 extends Joueur {
 		super(j1);
 		this.lp = new ArrayList<Pion>();
 	}
+	public JoueurP4(String j1,int num) {
+		super(j1,num);
+		this.lp = new ArrayList<Pion>();
+	}
+	
 
 	public ArrayList<Pion> getLp() {
 		return this.lp;

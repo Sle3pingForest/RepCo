@@ -9,8 +9,8 @@ public class Jeu {
 	protected int[][] plateau = new int[6][7]; // ligne =  plateau.leght et colonne = plateau[0].length
 	
 	public Jeu (String j1, String j2) {
-		this.j1 = new JoueurP4(j1);
-		this.j2 = new JoueurP4(j2);
+		this.j1 = new JoueurP4(j1,1);
+		this.j2 = new JoueurP4(j2,5);
 		this.setInitial();
 	}
 	

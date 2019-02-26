@@ -22,6 +22,7 @@ public class Puissance4 {
 		System.out.println("Joueur 1: " + j.getJ1().getNom() +" ******* Joueur 2: " + j.getJ2().getNom() );
 		j.setInitial();
 		EtatP4 e = new EtatP4(j, j.getJ1());
+		e.setMax(true);
 		System.out.println("test " + e.getJcourant().getNom());
 		int nb = 0;
 		
@@ -57,7 +58,7 @@ public class Puissance4 {
 			int nb = 0;
 			e.createSuccesseur();
 			
-			while (nb < 5000) {
+			while (nb < 1000) {
 			double max = Integer.MIN_VALUE;	
 			ArrayList<EtatP4> list = new ArrayList<>();
 			ArrayList<Integer> indice = new ArrayList<>();
@@ -86,31 +87,41 @@ public class Puissance4 {
 			}
 			if (eCourant.getListSucc().size() == 0 && !eCourant.finJeu() && !eCourant.rempli2()) {
 				eCourant.createSuccesseur();
+				//System.out.println(eCourant.getListSucc().size() + " BONJOUR");
 			} 
-			EtatP4 etatchoix = eCourant.choixRandom(jc);
-			etatchoix.addParent(eCourant);
-			eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
-			/*eCourant.affichage();
-			System.out.println(eCourant.bValeur());
-			System.out.println(nb);*/
-			nb++;
+			//if (eCourant.getListSucc().size() > 0) {
+				//System.out.println("TES DEDANS");
+				EtatP4 etatchoix = eCourant.choixRandom(jc);
+				etatchoix.addParent(eCourant);
+				eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
+				/*eCourant.affichage();
+				System.out.println(eCourant.bValeur());
+				System.out.println(nb);*/
+				nb++;
+			//}
 		}
 		/*
 		EtatP4 eparcours = e;
 		
 		affiche(eparcours);
 		*/
-			
-			
+		
+		affiche(e);
+		System.out.println(e.choixNoeudMax().bValeur());
 		return e.choixNoeudMax(); 
 
 	}
 	
-	public void affiche(EtatP4 e) {
-		for (EtatP4 et : e.getListSucc()) {
-			et.affichage();
-			System.out.println(et.bValeur());
-			if (et.getListSucc().size() > 0) affiche(et);
+	public static void affiche(EtatP4 e) {
+		if (e.getListSucc().size() == 0) {
+			e.affichage();
+			System.out.println(e.getJcourant().getNom() + "    " + e.getMax());
+			System.out.println();
+			
+		} else {
+			
+			EtatP4 meilleur = e.choixNoeudMax();
+			affiche(meilleur);
 		}
 		
 	}

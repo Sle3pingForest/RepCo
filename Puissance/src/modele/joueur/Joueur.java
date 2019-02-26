@@ -8,13 +8,24 @@ public abstract class Joueur {
 	
 	protected String nom;
 	protected int nbCoupJoue;	
+	protected int num ;
 	
 	public Joueur(String j) {
 		this.nom = j;
 		this.nbCoupJoue = 0;
 	}
+	public Joueur(String j, int numP) {
+		this.nom = j;
+		this.nbCoupJoue = 0;
+		num = numP;
+	}
 	
-	
+	public int getNum() {
+		return num;
+	}
+	public void setNum(int num) {
+		this.num = num;
+	}
 	public int getNbCoupJoue() {
 		return nbCoupJoue;
 	}

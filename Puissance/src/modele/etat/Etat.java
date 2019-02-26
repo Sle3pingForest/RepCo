@@ -70,6 +70,7 @@ public abstract class Etat {
 	}
 	public void addParent(Etat e) {
 		parent = e;
+		max = !parent.getMax();
 	}
 	public Etat getParent() {
 		return parent;
@@ -81,7 +82,7 @@ public abstract class Etat {
 	}
 	
 	public double bValeur() {
-		if (getNbSimu() == 0 || parent == null) return Integer.MIN_VALUE;
+		if (getNbSimu() == 0 || parent == null) return 0;
 		double bValeur = moyenne() + c * Math.sqrt( Math.log(parent.getNbSimu()) / getNbSimu());
 		if (!getMax()) return -bValeur;
 		return bValeur;

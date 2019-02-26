@@ -32,7 +32,11 @@ public class EtatP4 extends Etat {
 	public void createSuccesseur() {
 		Joueur jc = jeu.getJ1();
 		if (getJcourant().getNom() == jeu.getJ1().getNom()) jc = jeu.getJ2();
-		listSucc = successeur(this, jc);		
+		listSucc = successeur(this, jc);	
+		//System.out.println(listSucc.size());
+		/*for (EtatP4 e: listSucc) {
+			e.affichage();
+		}*/
 	}
 	
 	public ArrayList<EtatP4> getListSucc() {
@@ -86,7 +90,7 @@ public class EtatP4 extends Etat {
 		ArrayList<Integer> indice = new ArrayList<>();
 		int index = 0;
 		for (EtatP4 et : this.getListSucc()) {
-			if (et.bValeur() == max) list.add(et);
+			if (et.bValeur() == max) list.add(et); 
 			if (et.bValeur() > max ) {
 				max = et.bValeur();
 				list.clear();
@@ -389,11 +393,11 @@ public class EtatP4 extends Etat {
 
 	public void setValue(int i , int j, Joueur joueur){
 		if(joueur.getNom().equals(this.jeu.getJ1().getNom().toString())){
-			this.plateau[i][j] = 2;
+			this.plateau[i][j] = joueur.getNum();
 		}
 
 		if(joueur.getNom().equals(this.jeu.getJ2().getNom().toString())){
-			this.plateau[i][j] = 1;
+			this.plateau[i][j] = joueur.getNum();
 		}
 
 	}
