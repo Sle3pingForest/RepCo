@@ -55,10 +55,16 @@ public class Puissance4 {
 
 	public static EtatP4 selection (EtatP4 e, Joueur j1, Joueur j2, Joueur jc)  {
 
-		int nb = 0;
 		e.createSuccesseur();
 
-		while (nb < 10000) {
+		
+		long debut = System.currentTimeMillis();
+		
+		// temps pendant lequel lalgo cherche dans larbre : 3 secondes
+		long tempsRecherche = 3000;
+		
+		
+		while (System.currentTimeMillis() <  (long)(debut + tempsRecherche) ) {
 
 			double max = Integer.MIN_VALUE;	
 			EtatP4 eCourant = null;
@@ -93,7 +99,6 @@ public class Puissance4 {
 				}
 				eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
 			}
-			nb++;
 		}
 		return e.choixNoeudMax(); 
 	}

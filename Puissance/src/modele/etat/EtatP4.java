@@ -451,7 +451,7 @@ public class EtatP4 extends Etat {
 						this.plateau[3][indiceColone] != 0 && 
 						this.plateau[4][indiceColone] != 0 &&
 						this.plateau[5][indiceColone] != 0){
-					System.out.println("full1 " +  indiceColone);
+					System.out.println("full " +  indiceColone);
 					valide = false;
 				} 
 			} else {
@@ -459,9 +459,6 @@ public class EtatP4 extends Etat {
 				
 				etatfavorable = Puissance4.selection(this, jeu.getJ1(), jeu.getJ2(), j);//minimax(new EtatP4(jeu, j),1);
 				indiceColone = etatfavorable.getPion().getPosY();
-				System.out.println();
-				this.affichage();
-				System.out.println(etatfavorable.getPion().getPosY() + "   " + etatfavorable.getPion().getPosX());
 			}
 			while( k < this.plateau.length-1 && !estJouer && valide){
 
@@ -505,13 +502,6 @@ public class EtatP4 extends Etat {
 			}
 		}
 
-	}
-
-	public void selection(EtatP4 init) {
-		
-		
-		
-		
 	}
 
 
