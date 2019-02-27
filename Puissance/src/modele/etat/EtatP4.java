@@ -33,10 +33,6 @@ public class EtatP4 extends Etat {
 		Joueur jc = jeu.getJ1();
 		if (getJcourant().getNom() == jeu.getJ1().getNom()) jc = jeu.getJ2();
 		listSucc = successeur(this, jc);	
-		//System.out.println(listSucc.size());
-		/*for (EtatP4 e: listSucc) {
-			e.affichage();
-		}*/
 	}
 	
 	public ArrayList<EtatP4> getListSucc() {
@@ -49,16 +45,21 @@ public class EtatP4 extends Etat {
 
 	public EtatP4 choixRandom(Joueur jc) {
 		
-		ArrayList<EtatP4> ensembleEtat = successeur(this, jc);		
-		int taille = (ensembleEtat.size()- 1);
+		if (this.getListSucc().size() == 0) this.createSuccesseur();
+		//System.out.println("test list " + this.getListSucc());
+		int taille = (this.getListSucc().size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
-		ensembleEtat.get(r).setJcourant(jc);
-		ensembleEtat.get(r).setVisite(true);
+		this.getListSucc().get(r).setJcourant(jc);
+		if (this.getListSucc().get(r).getVisite() == false) {
+			this.getListSucc().get(r).setVisite(true);
+			this.augmenterNbVisite();
+		}
 		jc.augmenterCoup();
-		return ensembleEtat.get(r);
+		this.getListSucc().get(r).addParent(this);
+		return this.getListSucc().get(r);
 	}
 	
-	public EtatP4 choixEtatNonVisite() {
+	public EtatP4 choixEtatNonVisite(Joueur jc) {
 		ArrayList<EtatP4> ensembleEtat = new ArrayList<>();
 		
 		for (EtatP4 e : listSucc) {
@@ -70,7 +71,10 @@ public class EtatP4 extends Etat {
 		int taille = (ensembleEtat.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
 		ensembleEtat.get(r).setVisite(true);
+		this.getListSucc().get(r).setJcourant(jc);
+		this.augmenterNbVisite();
 		this.getJcourant().augmenterCoup();
+		ensembleEtat.get(r).addParent(this);
 		return ensembleEtat.get(r);
 	}
 	
@@ -104,6 +108,7 @@ public class EtatP4 extends Etat {
 		int taille = (list.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
 		EtatP4 eCourant = list.get(r);
+		eCourant.addParent(this);
 		return eCourant;
 	}
 	
@@ -111,6 +116,7 @@ public class EtatP4 extends Etat {
 	public int marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
 		if (this.finJeu() || this.rempli2()) {
 			int score = this.evaluation(0, this);
+			
 			this.recompense.add(score);
 			this.incremente();
 			return score;
@@ -118,7 +124,7 @@ public class EtatP4 extends Etat {
 		else {
 			if (jc == j1)  jc = j2;
 			else jc = j1;
-			EtatP4 etat = choixRandom(jc);
+			EtatP4 etat = choixRandom(jc); 
 			return  etat.marcheAleatoire(j1, j2, jc);
 		}
 	}
@@ -145,10 +151,10 @@ public class EtatP4 extends Etat {
 		int i = p.getPosX();
 		int k = p.getPosY();
 		if(this.jcourant.getNom().equals(jeu.getJ2().getNom())){
-			this.plateau[i][k] = 1;
+			this.plateau[i][k] = 2;
 		}
 		else{
-			this.plateau[i][k] = 2;
+			this.plateau[i][k] = 1;
 		}
 	}
 
@@ -156,8 +162,8 @@ public class EtatP4 extends Etat {
 	public boolean finJeu() {
 		boolean fin = false;
 		if(!this.rempli()){
-			for(int i = 0; i < this.getPlateau().length ; ++i){
-				for(int j = 0; j < this.getPlateau().length-3; ++j){
+			for(int i = 0; i < this.getPlateau().length; ++i){
+				for(int j = 0; j < this.getPlateau()[0].length-3; ++j){
 					if(this.getPlateau()[i][j] == 2
 							&& this.getPlateau()[i][j+1] == 2
 							&& this.getPlateau()[i][j+2] == 2
@@ -174,7 +180,7 @@ public class EtatP4 extends Etat {
 				}
 			}
 			for(int i = 0; i < this.getPlateau()[0].length ; ++i){
-				for(int j = 0; j < this.getPlateau().length-3; ++j){
+				for(int j = 0; j < this.getPlateau().length - 3; ++j){
 					if(this.getPlateau()[j][i] == 2
 							&& this.getPlateau()[j+1][i] == 2
 							&& this.getPlateau()[j+2][i] == 2
@@ -192,8 +198,9 @@ public class EtatP4 extends Etat {
 
 			}
 
+			// diagonale haute droite
 			for(int i = 0; i < this.getPlateau().length - 3; ++i){
-				for(int j = 0; j < this.getPlateau()[0].length -3; ++j){
+				for(int j = 0; j < this.getPlateau()[0].length - 3; ++j){
 					if(this.getPlateau()[i][j] == 2 &&
 							this.getPlateau()[i+1][j+1] == 2 &&
 							this.getPlateau()[i+2][j+2] == 2 &&
@@ -209,6 +216,8 @@ public class EtatP4 extends Etat {
 					}
 				}
 			}
+			
+			// diagonale haute gauche
 			for(int i = this.getPlateau().length - 1; i > 2 ; --i){
 				for(int j = 0; j < this.getPlateau()[0].length -3; ++j){
 
@@ -243,7 +252,7 @@ public class EtatP4 extends Etat {
 		int colonne = this.jeu.getPlateau().length;
 		int ligne = this.jeu.getPlateau()[0].length;
 		boolean j1 = this.jeu.getJ1().getNbCoupJoue() == (ligne*colonne)/2;
-		boolean j2 = this.jeu.getJ2().getNbCoupJoue() == (ligne*colonne)/2;
+		boolean j2 = this.jeu.getJ2().getNbCoupJoue() == (ligne*colonne)/2;	
 		if ( j1 && j2) {
 			rempli = true;
 		}
@@ -255,7 +264,7 @@ public class EtatP4 extends Etat {
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 7; j++) {
 				if (plateau[i][j] == 0)rempli = false;
-			}
+			}	
 		}
 		return rempli;
 	}
@@ -437,6 +446,9 @@ public class EtatP4 extends Etat {
 			} else {
 				valide = true;
 				etatfavorable = Puissance4.selection(this, jeu.getJ1(), jeu.getJ2(), j);//minimax(new EtatP4(jeu, j),1);
+				System.out.println(" OUI ");
+				etatfavorable.affichage();
+				System.out.println(" NON " + etatfavorable.getPion().getPosY());
 				indiceColone = etatfavorable.getPion().getPosY();
 			}
 			while( k < this.plateau.length-1 && !estJouer && valide){
@@ -483,7 +495,6 @@ public class EtatP4 extends Etat {
 
 	}
 
-
 	public void selection(EtatP4 init) {
 		
 		
@@ -519,14 +530,16 @@ public class EtatP4 extends Etat {
 		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
 		int score = 0;
 		if(e.finJeu()){
-			if(e.getGagant().getNom().equals("IA")){
-				return +1000;
+			if(e.getJcourant().getNom().equals("IA")){
+				return +1;
 			}
-			if(!e.getGagant().getNom().equals("IA")){
-				return -1000;
+			if(!e.getJcourant().getNom().equals("IA")){
+				return -1;
 			}
 			if(rempli()){return 0;}
 		}
+		return 0;
+		/*
 		if(c == 0){
 			
 			int b = eval0_2(e.getPion());
@@ -576,6 +589,7 @@ public class EtatP4 extends Etat {
 			System.out.println(" score min  " + score_min);
 			return score_min;
 		}
+		*/
 	}
 
 	public int max(int a, int b ){

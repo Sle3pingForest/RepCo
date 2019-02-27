@@ -56,49 +56,45 @@ public class Puissance4 {
 	public static EtatP4 selection (EtatP4 e, Joueur j1, Joueur j2, Joueur jc)  {
 
 			int nb = 0;
-			e.createSuccesseur();
+			//e.createSuccesseur();
 			
 			while (nb < 1000) {
+				//System.out.println(" \n NEW SIMU  \n");
 			double max = Integer.MIN_VALUE;	
-			ArrayList<EtatP4> list = new ArrayList<>();
-			ArrayList<Integer> indice = new ArrayList<>();
-			int index = 0;
-			for (EtatP4 et : e.getListSucc()) {
-				if (et.bValeur() == max) list.add(et);
-				if (et.bValeur() > max ) {
-					max = et.bValeur();
-					list.clear();
-					indice.clear();
-					list.add(et);
-					indice.add(index);
-				}
-				index++;
-			}
+			EtatP4 eCourant = null;
 			
-			int taille =(list.size()- 1);
-			int r = (int) (Math.random() *  (taille -1)) ;
-			EtatP4 eCourant = list.get(r);
-			eCourant.addParent(e);
-
-			while (eCourant.getListSucc().size() > 0) {
-				EtatP4 efils = eCourant.choixNoeudMax();
-				efils.addParent(eCourant);
-				eCourant = efils;
+			if (e.getNbVisite() < 7 && e.getListSucc().size() > 0) {
+				// cas ou il reste des fils non developpe on choisit parmi ceux la
+				//System.out.println(e.getListSucc().size() + "   " + e.getNbVisite());
+				eCourant = e.choixEtatNonVisite(jc);
+			} else if ( e.getListSucc().size() == 0) {
+				// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
+				 eCourant = e.choixRandom(jc);
+			} else {
+				// cas ou tous les noeuds ont ete visite au moins 1 fois 
+				// on choisit le noeud avec la meilleure bvaleur
+				eCourant = e;
+				EtatP4 efils = null;
+				while (eCourant.getNbVisite() > 6) {
+					efils = eCourant.choixNoeudMax();
+					eCourant = efils;
+				}
 			}
-			if (eCourant.getListSucc().size() == 0 && !eCourant.finJeu() && !eCourant.rempli2()) {
-				eCourant.createSuccesseur();
-				//System.out.println(eCourant.getListSucc().size() + " BONJOUR");
-			} 
-			//if (eCourant.getListSucc().size() > 0) {
-				//System.out.println("TES DEDANS");
-				EtatP4 etatchoix = eCourant.choixRandom(jc);
-				etatchoix.addParent(eCourant);
+			if (!eCourant.finJeu() && !eCourant.rempli2()) {
+				EtatP4 etatchoix = null;
+				if (eCourant.getNbVisite() < 7 && eCourant.getListSucc().size() > 0) {
+					// cas ou il reste des fils non developpe on choisit parmi ceux la
+					etatchoix = eCourant.choixEtatNonVisite(jc);
+				} else if ( eCourant.getListSucc().size() == 0) {
+					// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
+					etatchoix = eCourant.choixRandom(jc);
+				} else {
+					etatchoix = eCourant.choixNoeudMax();
+				}
 				eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
-				/*eCourant.affichage();
-				System.out.println(eCourant.bValeur());
-				System.out.println(nb);*/
-				nb++;
-			//}
+				
+			}
+			nb++;
 		}
 		/*
 		EtatP4 eparcours = e;
@@ -109,7 +105,6 @@ public class Puissance4 {
 		affiche(e);
 		System.out.println(e.choixNoeudMax().bValeur());
 		return e.choixNoeudMax(); 
-
 	}
 	
 	public static void affiche(EtatP4 e) {
