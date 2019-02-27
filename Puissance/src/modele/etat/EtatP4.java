@@ -42,6 +42,15 @@ public class EtatP4 extends Etat {
 	public void setListSucc(ArrayList<EtatP4> listSucc) {
 		this.listSucc = listSucc;
 	}
+	
+	public boolean checkTousVisite() {
+		boolean check = true;
+		if (listSucc.size() == 0) check = false;
+		for (EtatP4 e : listSucc) {
+			if (e.getVisite() == false) check = false;
+		}
+		return check;
+	}
 
 	public EtatP4 choixRandom(Joueur jc) {
 		
@@ -116,7 +125,6 @@ public class EtatP4 extends Etat {
 	public int marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
 		if (this.finJeu() || this.rempli2()) {
 			int score = this.evaluation(0, this);
-			
 			this.recompense.add(score);
 			this.incremente();
 			return score;
@@ -162,35 +170,37 @@ public class EtatP4 extends Etat {
 	public boolean finJeu() {
 		boolean fin = false;
 		if(!this.rempli()){
+			int j1 = this.getJeu().getJ1().getNum();
+			int j2 = this.getJeu().getJ2().getNum();
 			for(int i = 0; i < this.getPlateau().length; ++i){
 				for(int j = 0; j < this.getPlateau()[0].length-3; ++j){
-					if(this.getPlateau()[i][j] == 2
-							&& this.getPlateau()[i][j+1] == 2
-							&& this.getPlateau()[i][j+2] == 2
-							&& this.getPlateau()[i][j+3] == 2){
+					if(this.getPlateau()[i][j] == j1
+							&& this.getPlateau()[i][j+1] == j1
+							&& this.getPlateau()[i][j+2] == j1
+							&& this.getPlateau()[i][j+3] == j1){
 						fin = true;
 
 					}
-					if(this.getPlateau()[i][j] == 1
-							&& this.getPlateau()[i][j+1] == 1
-							&& this.getPlateau()[i][j+2] == 1
-							&& this.getPlateau()[i][j+3] == 1){
+					if(this.getPlateau()[i][j] == j2
+							&& this.getPlateau()[i][j+1] == j2
+							&& this.getPlateau()[i][j+2] == j2
+							&& this.getPlateau()[i][j+3] == j2){
 						fin = true;
 					}
 				}
 			}
 			for(int i = 0; i < this.getPlateau()[0].length ; ++i){
 				for(int j = 0; j < this.getPlateau().length - 3; ++j){
-					if(this.getPlateau()[j][i] == 2
-							&& this.getPlateau()[j+1][i] == 2
-							&& this.getPlateau()[j+2][i] == 2
-							&& this.getPlateau()[j+3][i] == 2){
+					if(this.getPlateau()[j][i] == j1
+							&& this.getPlateau()[j+1][i] == j1
+							&& this.getPlateau()[j+2][i] == j1
+							&& this.getPlateau()[j+3][i] == j1){
 						fin = true;
 					}
-					if(this.getPlateau()[j][i] == 1
-							&& this.getPlateau()[j+1][i] == 1
-							&& this.getPlateau()[j+2][i] == 1
-							&& this.getPlateau()[j+3][i] == 1){
+					if(this.getPlateau()[j][i] == j2
+							&& this.getPlateau()[j+1][i] == j2
+							&& this.getPlateau()[j+2][i] == j2
+							&& this.getPlateau()[j+3][i] == j2){
 
 						fin = true;
 					}
@@ -201,17 +211,17 @@ public class EtatP4 extends Etat {
 			// diagonale haute droite
 			for(int i = 0; i < this.getPlateau().length - 3; ++i){
 				for(int j = 0; j < this.getPlateau()[0].length - 3; ++j){
-					if(this.getPlateau()[i][j] == 2 &&
-							this.getPlateau()[i+1][j+1] == 2 &&
-							this.getPlateau()[i+2][j+2] == 2 &&
-							this.getPlateau()[i+3][j+3] == 2 ){
+					if(this.getPlateau()[i][j] == j1 &&
+							this.getPlateau()[i+1][j+1] == j1 &&
+							this.getPlateau()[i+2][j+2] == j1 &&
+							this.getPlateau()[i+3][j+3] == j1 ){
 						fin = true;
 					}
 
-					if(this.getPlateau()[i][j] == 1 &&
-							this.getPlateau()[i+1][j+1] == 1 &&
-							this.getPlateau()[i+2][j+2] == 1 &&
-							this.getPlateau()[i+3][j+3] == 1 ){
+					if(this.getPlateau()[i][j] == j2 &&
+							this.getPlateau()[i+1][j+1] == j2 &&
+							this.getPlateau()[i+2][j+2] == j2 &&
+							this.getPlateau()[i+3][j+3] == j2 ){
 						fin = true;
 					}
 				}
@@ -221,17 +231,17 @@ public class EtatP4 extends Etat {
 			for(int i = this.getPlateau().length - 1; i > 2 ; --i){
 				for(int j = 0; j < this.getPlateau()[0].length -3; ++j){
 
-					if(this.getPlateau()[i][j] == 2 &&
-							this.getPlateau()[i-1][j+1] == 2 &&
-							this.getPlateau()[i-2][j+2] == 2 &&
-							this.getPlateau()[i-3][j+3] == 2 ){
+					if(this.getPlateau()[i][j] == j1 &&
+							this.getPlateau()[i-1][j+1] == j1 &&
+							this.getPlateau()[i-2][j+2] == j1 &&
+							this.getPlateau()[i-3][j+3] == j1 ){
 						fin = true;
 					}
 
-					if(this.getPlateau()[i][j] == 1 &&
-							this.getPlateau()[i-1][j+1] == 1 &&
-							this.getPlateau()[i-2][j+2] == 1 &&
-							this.getPlateau()[i-3][j+3] == 1 ){
+					if(this.getPlateau()[i][j] == j2 &&
+							this.getPlateau()[i-1][j+1] == j2 &&
+							this.getPlateau()[i-2][j+2] == j2 &&
+							this.getPlateau()[i-3][j+3] == j2 ){
 						fin = true;
 
 					}
@@ -401,6 +411,7 @@ public class EtatP4 extends Etat {
 	}
 
 	public void setValue(int i , int j, Joueur joueur){
+		//if (i == 5 || j == 5) System.out.println(" i  " + i + "  j  " + j +  "      num " + joueur.getNum());
 		if(joueur.getNom().equals(this.jeu.getJ1().getNom().toString())){
 			this.plateau[i][j] = joueur.getNum();
 		}
@@ -434,7 +445,7 @@ public class EtatP4 extends Etat {
 					valide = true;
 				}
 
-				if(this.plateau[0][indiceColone] != 0 &&
+				if(valide && this.plateau[0][indiceColone] != 0 &&
 						this.plateau[1][indiceColone] != 0 && 
 						this.plateau[2][indiceColone] != 0 && 
 						this.plateau[3][indiceColone] != 0 && 
@@ -445,11 +456,12 @@ public class EtatP4 extends Etat {
 				} 
 			} else {
 				valide = true;
+				
 				etatfavorable = Puissance4.selection(this, jeu.getJ1(), jeu.getJ2(), j);//minimax(new EtatP4(jeu, j),1);
-				System.out.println(" OUI ");
-				etatfavorable.affichage();
-				System.out.println(" NON " + etatfavorable.getPion().getPosY());
 				indiceColone = etatfavorable.getPion().getPosY();
+				System.out.println();
+				this.affichage();
+				System.out.println(etatfavorable.getPion().getPosY() + "   " + etatfavorable.getPion().getPosX());
 			}
 			while( k < this.plateau.length-1 && !estJouer && valide){
 

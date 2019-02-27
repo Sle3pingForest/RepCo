@@ -25,9 +25,9 @@ public class Puissance4 {
 		e.setMax(true);
 		System.out.println("test " + e.getJcourant().getNom());
 		int nb = 0;
-		
-		
-		
+
+
+
 		boolean estRemplie = e.rempli();
 		while(!estRemplie){
 			estRemplie = e.finJeu();
@@ -47,7 +47,7 @@ public class Puissance4 {
 
 		System.out.println(e.getGagant().getNom() + "a win");
 		System.out.println("end game");
-		 
+
 
 	}
 
@@ -55,34 +55,34 @@ public class Puissance4 {
 
 	public static EtatP4 selection (EtatP4 e, Joueur j1, Joueur j2, Joueur jc)  {
 
-			int nb = 0;
-			//e.createSuccesseur();
-			
-			while (nb < 1000) {
-				//System.out.println(" \n NEW SIMU  \n");
+		int nb = 0;
+		e.createSuccesseur();
+
+		while (nb < 10000) {
+
 			double max = Integer.MIN_VALUE;	
 			EtatP4 eCourant = null;
-			
-			if (e.getNbVisite() < 7 && e.getListSucc().size() > 0) {
+
+			if (!e.checkTousVisite() && e.getListSucc().size() > 0) {
 				// cas ou il reste des fils non developpe on choisit parmi ceux la
 				//System.out.println(e.getListSucc().size() + "   " + e.getNbVisite());
 				eCourant = e.choixEtatNonVisite(jc);
 			} else if ( e.getListSucc().size() == 0) {
 				// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
-				 eCourant = e.choixRandom(jc);
+				eCourant = e.choixRandom(jc);
 			} else {
 				// cas ou tous les noeuds ont ete visite au moins 1 fois 
 				// on choisit le noeud avec la meilleure bvaleur
 				eCourant = e;
 				EtatP4 efils = null;
-				while (eCourant.getNbVisite() > 6) {
+				while (eCourant.checkTousVisite()) {
 					efils = eCourant.choixNoeudMax();
 					eCourant = efils;
 				}
 			}
 			if (!eCourant.finJeu() && !eCourant.rempli2()) {
 				EtatP4 etatchoix = null;
-				if (eCourant.getNbVisite() < 7 && eCourant.getListSucc().size() > 0) {
+				if (!eCourant.checkTousVisite() && eCourant.getListSucc().size() > 0) {
 					// cas ou il reste des fils non developpe on choisit parmi ceux la
 					etatchoix = eCourant.choixEtatNonVisite(jc);
 				} else if ( eCourant.getListSucc().size() == 0) {
@@ -92,33 +92,24 @@ public class Puissance4 {
 					etatchoix = eCourant.choixNoeudMax();
 				}
 				eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
-				
 			}
 			nb++;
 		}
-		/*
-		EtatP4 eparcours = e;
-		
-		affiche(eparcours);
-		*/
-		
-		affiche(e);
-		System.out.println(e.choixNoeudMax().bValeur());
 		return e.choixNoeudMax(); 
 	}
-	
+
 	public static void affiche(EtatP4 e) {
 		if (e.getListSucc().size() == 0) {
 			e.affichage();
 			System.out.println(e.getJcourant().getNom() + "    " + e.getMax());
 			System.out.println();
-			
+
 		} else {
-			
+
 			EtatP4 meilleur = e.choixNoeudMax();
 			affiche(meilleur);
 		}
-		
+
 	}
 
 	public static void main(String[] args){

@@ -105,7 +105,7 @@ public abstract class Etat {
 	}
 	
 	public void augmenterNbVisite() {
-		this.nbVisite++;
+		this.nbVisite += 1;
 	}
 	
 	
