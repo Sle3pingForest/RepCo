@@ -10,7 +10,7 @@ public abstract class Etat {
 	
 	protected Jeu jeu;
 	protected Joueur jcourant;
-	protected ArrayList<Integer> recompense;
+	protected ArrayList<Double> recompense;
 	protected int nbSimu;
 	public final static double c = Math.sqrt(2);
 	protected Etat parent;
@@ -55,7 +55,7 @@ public abstract class Etat {
 	public boolean getMax() {
 		return max;
 	}
-	public void addRecompense(int r) {
+	public void addRecompense(double r) {
 		recompense.add(r);
 		nbSimu++;
 		if (parent != null) {
@@ -77,7 +77,7 @@ public abstract class Etat {
 	}
 	public double moyenne() {
 		int somme = 0;
-		for (int i : recompense) somme += i;
+		for (double i : recompense) somme += i;
 		return somme/nbSimu;
 	}
 	
@@ -106,6 +106,17 @@ public abstract class Etat {
 	
 	public void augmenterNbVisite() {
 		this.nbVisite += 1;
+	}
+	
+	public double tauxVictoire() {
+		
+		int nbVictoire =0;
+		for (double i : recompense) {
+			System.out.println(i);
+			if (i == 1) nbVictoire++;
+		}
+		//System.out.println( nbVictoire + "   " + getNbSimu() + " dddddddddddddddddddddddd");
+		return ((double)nbVictoire/nbSimu) * 100;
 	}
 	
 	

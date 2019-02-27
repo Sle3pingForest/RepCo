@@ -116,15 +116,22 @@ public class EtatP4 extends Etat {
 		
 		int taille = (list.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
-		EtatP4 eCourant = list.get(r);
-		eCourant.addParent(this);
+		EtatP4 eCourant = null;
+		if (taille < 0)  {
+			Joueur jc =  (this.getJcourant().getNom() == jeu.getJ1().getNom()) ? jeu.getJ2() : jeu.getJ1(); 
+			eCourant = this.choixRandom(jc);
+		}
+		else { 
+			eCourant = list.get(r);
+			eCourant.addParent(this);
+		}
 		return eCourant;
 	}
 	
 	
-	public int marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
+	public double marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
 		if (this.finJeu() || this.rempli2()) {
-			int score = this.evaluation(0, this);
+			double score = this.evaluation(0, this);
 			this.recompense.add(score);
 			this.incremente();
 			return score;
@@ -136,15 +143,6 @@ public class EtatP4 extends Etat {
 			return  etat.marcheAleatoire(j1, j2, jc);
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 
@@ -411,7 +409,6 @@ public class EtatP4 extends Etat {
 	}
 
 	public void setValue(int i , int j, Joueur joueur){
-		//if (i == 5 || j == 5) System.out.println(" i  " + i + "  j  " + j +  "      num " + joueur.getNum());
 		if(joueur.getNom().equals(this.jeu.getJ1().getNom().toString())){
 			this.plateau[i][j] = joueur.getNum();
 		}
@@ -462,14 +459,12 @@ public class EtatP4 extends Etat {
 			}
 			while( k < this.plateau.length-1 && !estJouer && valide){
 
-				if((plateau[k][indiceColone] == 1 || plateau[k][indiceColone] == 2) && plateau[k + 1][indiceColone] == 0){
+				if((plateau[k][indiceColone] == jeu.getJ1().getNum() || plateau[k][indiceColone] == jeu.getJ2().getNum()) && plateau[k + 1][indiceColone] == 0){
 					System.out.println(j.getNom() + " a joue!!!");
 					setJcourant(j);
 					//EtatP4 etatfavorable = minimax(new EtatP4(jeu, j),0);
 					//EtatP4 etatfavorable = minimaxAlphaBeta(new EtatP4(jeu, j),0,-100,+100);
 					if(j.getNom().equals("IA")){
-
-
 						setValue(etatfavorable.getpIA().getPosX(),etatfavorable.getpIA().getPosY(),jcourant);
 					}
 					else{
@@ -479,7 +474,6 @@ public class EtatP4 extends Etat {
 					j.setNbCoupJoue(1);
 					estJouer = true;
 					//((JoueurP4)j).ajouterPion(p);
-
 
 				}
 				if(plateau[k][indiceColone] == 0){
@@ -525,7 +519,7 @@ public class EtatP4 extends Etat {
 	 * 		  e = etat
 	 * @return  entier : coup gagant
 	 */
-	public int evaluation(int c, EtatP4 e){
+	public double evaluation(int c, EtatP4 e){
 		
 		//System.out.println(" JOUEUR " + e.jcourant.getNom( )+ "  num " + num);
 		int score_max , score_min;
@@ -533,14 +527,14 @@ public class EtatP4 extends Etat {
 		int score = 0;
 		if(e.finJeu()){
 			if(e.getJcourant().getNom().equals("IA")){
-				return +1;
+				return 1;
 			}
 			if(!e.getJcourant().getNom().equals("IA")){
-				return -1;
+				return 0;
 			}
-			if(rempli()){return 0;}
+			if(rempli()){return 0.5;}
 		}
-		return 0;
+		return 0.5;
 		/*
 		if(c == 0){
 			
@@ -672,7 +666,7 @@ public class EtatP4 extends Etat {
 					p4.setJcourant(jeu.getJ1());
 				}
 				
-				score_min = min(score_min,evaluation(c-1, p4));
+				score_min = min(score_min,(int)evaluation(c-1, p4));
 				if(score_min <= alpha){
 					return score_min;
 				}
@@ -704,13 +698,13 @@ public class EtatP4 extends Etat {
 			if (e.getJcourant() == jeu.getJ1()) jj = (JoueurP4) jeu.getJ2();
 			p4.setJcourant(jj);*/
 
-			int score = evaluation(c, p4);
-			System.out.println(p4.getJcourant().getNom() + "  PION " + p4.getPion().getPosY() +  "     y " + p4.getPion().getPosX() + "  score  "+ score);
+			int score = (int)evaluation(c, p4);
+			//System.out.println(p4.getJcourant().getNom() + "  PION " + p4.getPion().getPosY() +  "     y " + p4.getPion().getPosX() + "  score  "+ score);
 			if (c > 0) {
 				
 				if(score <= score_max){
 
-					System.out.println(" wallah " + score_max);
+					//System.out.println(" wallah " + score_max);
 					e_sortie = p4;
 					
 					if (score < score_max) {
@@ -741,7 +735,7 @@ public class EtatP4 extends Etat {
 		}
 		
 		int t = ensembleEtatAlea.size();
-		System.out.println( "taile " + t);
+		//System.out.println( "taile " + t);
 		t--;
 		if (t >= 0) {
 			int rand = (int)( Math.random() * (t - 0)) + 0;

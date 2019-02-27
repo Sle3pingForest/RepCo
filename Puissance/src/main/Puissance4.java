@@ -23,7 +23,6 @@ public class Puissance4 {
 		j.setInitial();
 		EtatP4 e = new EtatP4(j, j.getJ1());
 		e.setMax(true);
-		System.out.println("test " + e.getJcourant().getNom());
 		int nb = 0;
 
 
@@ -45,12 +44,11 @@ public class Puissance4 {
 
 		}
 
-		System.out.println(e.getGagant().getNom() + "a win");
+		System.out.println(e.getGagant().getNom() + " a win");
 		System.out.println("end game");
 
 
 	}
-
 
 
 	public static EtatP4 selection (EtatP4 e, Joueur j1, Joueur j2, Joueur jc)  {
@@ -61,13 +59,13 @@ public class Puissance4 {
 		long debut = System.currentTimeMillis();
 		
 		// temps pendant lequel lalgo cherche dans larbre : 3 secondes
-		long tempsRecherche = 3000;
+		long tempsRecherche = 5000;
 		
 		
 		while (System.currentTimeMillis() <  (long)(debut + tempsRecherche) ) {
 
 			double max = Integer.MIN_VALUE;	
-			EtatP4 eCourant = null;
+			EtatP4 eCourant = e;
 
 			if (!e.checkTousVisite() && e.getListSucc().size() > 0) {
 				// cas ou il reste des fils non developpe on choisit parmi ceux la
@@ -80,9 +78,8 @@ public class Puissance4 {
 				// cas ou tous les noeuds ont ete visite au moins 1 fois 
 				// on choisit le noeud avec la meilleure bvaleur
 				eCourant = e;
-				EtatP4 efils = null;
-				while (eCourant.checkTousVisite()) {
-					efils = eCourant.choixNoeudMax();
+				while (eCourant.checkTousVisite() &&  !eCourant.finJeu() && !eCourant.rempli2()) {
+					EtatP4 efils = eCourant.choixNoeudMax();
 					eCourant = efils;
 				}
 			}
@@ -100,6 +97,9 @@ public class Puissance4 {
 				eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
 			}
 		}
+		EtatP4 efinal = e.choixNoeudMax();
+		java.text.DecimalFormat df = new java.text.DecimalFormat("###.##");
+		System.out.println(" TAUX " + df.format(efinal.tauxVictoire()) + "%  NOMBRE SIMULATION   " + e.getNbSimu());
 		return e.choixNoeudMax(); 
 	}
 
