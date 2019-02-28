@@ -54,22 +54,17 @@ public class Puissance4 {
 	public static EtatP4 selection (EtatP4 e, Joueur j1, Joueur j2, Joueur jc)  {
 
 		e.createSuccesseur();
-
-		
 		long debut = System.currentTimeMillis();
 		
-		// temps pendant lequel lalgo cherche dans larbre : 3 secondes
+		// temps pendant lequel lalgo cherche dans larbre : 5 secondes
 		long tempsRecherche = 5000;
-		
 		
 		while (System.currentTimeMillis() <  (long)(debut + tempsRecherche) ) {
 
-			double max = Integer.MIN_VALUE;	
-			EtatP4 eCourant = e;
+			EtatP4 eCourant = null;
 
 			if (!e.checkTousVisite() && e.getListSucc().size() > 0) {
 				// cas ou il reste des fils non developpe on choisit parmi ceux la
-				//System.out.println(e.getListSucc().size() + "   " + e.getNbVisite());
 				eCourant = e.choixEtatNonVisite(jc);
 			} else if ( e.getListSucc().size() == 0) {
 				// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
@@ -83,7 +78,6 @@ public class Puissance4 {
 					eCourant = efils;
 				}
 			}
-
 			EtatP4 etatchoix = eCourant;
 			if (!eCourant.finJeu() && !eCourant.rempli2()) {
 				if (!eCourant.checkTousVisite() && eCourant.getListSucc().size() > 0) {
@@ -98,8 +92,8 @@ public class Puissance4 {
 		}
 		EtatP4 efinal = e.choixNoeudMax();
 		java.text.DecimalFormat df = new java.text.DecimalFormat("###.##");
-		System.out.println(" TAUX " + df.format(efinal.tauxVictoire()) + "%  NOMBRE SIMULATION   " + e.getNbSimu());
-		return e.choixNoeudMax(); 
+		System.out.println("TAUX : " + df.format(efinal.tauxVictoire()) + "%  NOMBRE SIMULATION : " + efinal.getNbSimu() + "   bValeur : " + efinal.bValeur() );
+		return efinal; 
 	}
 
 	public static void affiche(EtatP4 e) {

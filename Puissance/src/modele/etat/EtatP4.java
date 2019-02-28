@@ -80,13 +80,14 @@ public class EtatP4 extends Etat {
 		int taille = (ensembleEtat.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
 		ensembleEtat.get(r).setVisite(true);
-		this.getListSucc().get(r).setJcourant(jc);
+		ensembleEtat.get(r).setJcourant(jc);
 		this.augmenterNbVisite();
 		this.getJcourant().augmenterCoup();
 		ensembleEtat.get(r).addParent(this);
 		return ensembleEtat.get(r);
 	}
 	
+	/*
 	public EtatP4 choixMaxBValeur() {
 		
 		ArrayList<EtatP4> ensembleEtat = successeur(this);		
@@ -95,6 +96,7 @@ public class EtatP4 extends Etat {
 		
 		return ensembleEtat.get(r);
 	}
+	*/
 	
 	public EtatP4 choixNoeudMax() {
 		
@@ -117,13 +119,16 @@ public class EtatP4 extends Etat {
 		int taille = (list.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
 		EtatP4 eCourant = null;
-		if (taille < 0)  {
+		if (!this.finJeu() && !this.rempli2())  {
+			if ( taille < 0 ) {
 			Joueur jc =  (this.getJcourant().getNom() == jeu.getJ1().getNom()) ? jeu.getJ2() : jeu.getJ1(); 
 			eCourant = this.choixRandom(jc);
-		}
-		else { 
-			eCourant = list.get(r);
-			eCourant.addParent(this);
+			} else { 
+				eCourant = list.get(r);
+				eCourant.addParent(this);
+			}
+		} else {
+			eCourant = this;
 		}
 		return eCourant;
 	}

@@ -66,7 +66,7 @@ public abstract class Etat {
 		nbSimu++;
 	}
 	public int getNbSimu() {
-		return nbSimu;
+		return recompense.size();
 	}
 	public void addParent(Etat e) {
 		parent = e;
@@ -78,11 +78,11 @@ public abstract class Etat {
 	public double moyenne() {
 		int somme = 0;
 		for (double i : recompense) somme += i;
-		return somme/nbSimu;
+		return somme/recompense.size();
 	}
 	
 	public double bValeur() {
-		if (getNbSimu() == 0 || parent == null) return 0;
+		if (getNbSimu() == 0 || parent == null) return 0.5;
 		double bValeur = moyenne() + c * Math.sqrt( Math.log(parent.getNbSimu()) / getNbSimu());
 		if (!getMax()) return -bValeur;
 		return bValeur;
