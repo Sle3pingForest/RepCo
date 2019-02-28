@@ -32,7 +32,18 @@ public class EtatP4 extends Etat {
 	public void createSuccesseur() {
 		Joueur jc = jeu.getJ1();
 		if (getJcourant().getNom() == jeu.getJ1().getNom()) jc = jeu.getJ2();
-		listSucc = successeur(this, jc);	
+		listSucc = successeur(this, jc);
+		for (EtatP4 e : listSucc) {
+			e.addParent(this);
+		}
+	}
+	
+
+	public void createSuccesseur(Joueur jc) {
+		listSucc = successeur(this, jc);
+		for (EtatP4 e : listSucc) {
+			e.addParent(this);
+		}
 	}
 	
 	public ArrayList<EtatP4> getListSucc() {
@@ -58,13 +69,13 @@ public class EtatP4 extends Etat {
 		//System.out.println("test list " + this.getListSucc());
 		int taille = (this.getListSucc().size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
-		this.getListSucc().get(r).setJcourant(jc);
+		//this.getListSucc().get(r).setJcourant(jc);
 		if (this.getListSucc().get(r).getVisite() == false) {
 			this.getListSucc().get(r).setVisite(true);
 			this.augmenterNbVisite();
 		}
 		jc.augmenterCoup();
-		this.getListSucc().get(r).addParent(this);
+		//this.getListSucc().get(r).addParent(this);
 		return this.getListSucc().get(r);
 	}
 	
@@ -80,10 +91,10 @@ public class EtatP4 extends Etat {
 		int taille = (ensembleEtat.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
 		ensembleEtat.get(r).setVisite(true);
-		ensembleEtat.get(r).setJcourant(jc);
+		//ensembleEtat.get(r).setJcourant(jc);
 		this.augmenterNbVisite();
 		this.getJcourant().augmenterCoup();
-		ensembleEtat.get(r).addParent(this);
+		//ensembleEtat.get(r).addParent(this);
 		return ensembleEtat.get(r);
 	}
 	
@@ -102,18 +113,13 @@ public class EtatP4 extends Etat {
 		
 		double max = Integer.MIN_VALUE;
 		ArrayList<EtatP4> list = new ArrayList<>();
-		ArrayList<Integer> indice = new ArrayList<>();
-		int index = 0;
 		for (EtatP4 et : this.getListSucc()) {
 			if (et.bValeur() == max) list.add(et); 
 			if (et.bValeur() > max ) {
 				max = et.bValeur();
 				list.clear();
-				indice.clear();
 				list.add(et);
-				indice.add(index);
 			}
-			index++;
 		}
 		
 		int taille = (list.size()- 1);
@@ -124,8 +130,8 @@ public class EtatP4 extends Etat {
 			Joueur jc =  (this.getJcourant().getNom() == jeu.getJ1().getNom()) ? jeu.getJ2() : jeu.getJ1(); 
 			eCourant = this.choixRandom(jc);
 			} else { 
-				eCourant = list.get(r);
-				eCourant.addParent(this);
+				eCourant = list.get( r );
+				//eCourant.addParent(this);
 			}
 		} else {
 			eCourant = this;
@@ -142,9 +148,21 @@ public class EtatP4 extends Etat {
 			return score;
 		}
 		else {
-			if (jc == j1)  jc = j2;
+			if (jc.getNom() == j1.getNom() )  jc = j2;
 			else jc = j1;
-			EtatP4 etat = choixRandom(jc); 
+			// si un etat est gagnant on le choisit
+			EtatP4 etat = null;
+			/*if (listSucc.size() == 0) this.createSuccesseur();
+			for (EtatP4 e : listSucc) {
+				if (e.finJeu() && e.getMax()) etat = e;
+			}
+			if (etat == null) */
+			etat = choixRandom(jc); 
+			/*System.out.println();
+			etat.affichage();
+			System.out.println(etat.getMax() + "  " + etat.getJcourant().getNom());
+			if (etat.finJeu() ) System.out.println(" FIN MARCHE  FIN JEU ");
+			if (etat.rempli2()) System.out.println(" FIN MARCHE  REMPLI");*/
 			return  etat.marcheAleatoire(j1, j2, jc);
 		}
 	}
@@ -162,10 +180,10 @@ public class EtatP4 extends Etat {
 		int i = p.getPosX();
 		int k = p.getPosY();
 		if(this.jcourant.getNom().equals(jeu.getJ2().getNom())){
-			this.plateau[i][k] = 2;
+			this.plateau[i][k] = jeu.getJ2().getNum();
 		}
 		else{
-			this.plateau[i][k] = 1;
+			this.plateau[i][k] = jeu.getJ1().getNum();
 		}
 	}
 
@@ -336,6 +354,7 @@ public class EtatP4 extends Etat {
 			}
 			System.out.println("");
 		}
+		System.out.println();
 	}
 
 
@@ -424,19 +443,17 @@ public class EtatP4 extends Etat {
 
 	}
 
-	public static boolean isInteger(String s) {
-	    try { 
-	        Integer.parseInt(s); 
-	    } catch(NumberFormatException e) { 
-	        return false; 
-	    } catch(NullPointerException e) {
-	        return false;
-	    }
-	    // only got here if we didn't return false
-	    return true;
-	}
 
-
+	
+    public boolean isInteger(String string) {
+        try {
+            Integer.valueOf(string);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+    
 	@Override
 	public void poserJetton(Joueur j, Jeu jeu){
 
@@ -450,12 +467,19 @@ public class EtatP4 extends Etat {
 			if(!j.getNom().equals("IA")){
 				System.out.print("Choisissez la colonne ou poser le pion (1 a 7) : ");
 				Scanner sc = new Scanner(System.in);
-				/*String oui = sc.nextLine();
-				while (!EtatP4.isInteger(sc.nextLine()) || Integer.parseInt(sc.nextLine()) > 7 || Integer.parseInt(sc.nextLine()) < 1 ) {
-					System.err.println("chiffre pas bon doit etre entre 1 et 7");
-					oui = sc.nextLine();
-				}*/
-				indiceColone = sc.nextInt();
+				String s = sc.next();
+                boolean ok = false;
+                while(!ok){
+                    if(this.isInteger(s)){
+                        ok = true;
+                        indiceColone = Integer.parseInt(s);
+                    }
+                    else{
+                        System.out.print("Choisissez la colonne ou poser le pion (1 a 7) : ");
+                        sc = new Scanner(System.in);
+                        s = sc.next();
+                    }
+                }
 				if(0 < indiceColone && indiceColone < 8 ){
 					indiceColone = indiceColone - 1;
 					valide = true;
@@ -545,14 +569,17 @@ public class EtatP4 extends Etat {
 		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
 		int score = 0;
 		if(e.finJeu()){
-			if(e.getJcourant().getNom().equals("IA")){
-				return 1;
-			}
-			if(!e.getJcourant().getNom().equals("IA")){
+			if(e.getMax()/*e.getJcourant().getNom().equals("IA")*/){
+				return 1.0;
+			} else {
 				return 0;
 			}
-			if(rempli()){return 0;}
+			/*if(!e.getJcourant().getNom().equals("IA")){
+				return 0;
+			}*/
+			
 		}
+		if(rempli2()){return 0;}
 		return 0;
 		/*
 		if(c == 0){

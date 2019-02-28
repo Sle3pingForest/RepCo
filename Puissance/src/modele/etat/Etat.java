@@ -72,6 +72,7 @@ public abstract class Etat {
 		parent = e;
 		max = !parent.getMax();
 	}
+	
 	public Etat getParent() {
 		return parent;
 	}
@@ -114,10 +115,8 @@ public abstract class Etat {
 		
 		int nbVictoire =0;
 		for (double i : recompense) {
-			System.out.println(i);
 			if (i == 1.0) nbVictoire++;
 		}
-		System.out.println( nbVictoire + "   " + getNbSimu() + " dddddddddddddddddddddddd");
 		return ((double)nbVictoire/getNbSimu()) * 100;
 	}
 	

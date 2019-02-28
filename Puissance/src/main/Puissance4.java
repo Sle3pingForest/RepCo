@@ -22,8 +22,8 @@ public class Puissance4 {
 		System.out.println("Joueur 1: " + j.getJ1().getNom() +" ******* Joueur 2: " + j.getJ2().getNom() );
 		j.setInitial();
 		EtatP4 e = new EtatP4(j, j.getJ1());
-		e.setMax(true);
-		int nb = 0;
+		//e.setMax(false);
+		//int nb = 0;
 
 
 
@@ -53,24 +53,33 @@ public class Puissance4 {
 
 	public static EtatP4 selection (EtatP4 e, Joueur j1, Joueur j2, Joueur jc)  {
 
-
+		e.setJcourant(j1);
 		e.setMax(false);
 		e.createSuccesseur();
 		long debut = System.currentTimeMillis();
-		
+
 		// temps pendant lequel lalgo cherche dans larbre en millieme de seconde
 		long tempsRecherche = 3000;
-		
+
 		while (System.currentTimeMillis() <  (long)(debut + tempsRecherche) ) {
 
 			EtatP4 eCourant = null;
+			/*
+			// Q3 : si on a un noeud fils gagnant on le choisit
+			for (EtatP4 ee : e.getListSucc()) {
+				if (ee.finJeu() && ee.getMax()) eCourant = ee;
+			}
+			if (eCourant == null) {
+			// FIN Q3 sinon on fait selon mcts
+			 */
+
 
 			if (!e.checkTousVisite() && e.getListSucc().size() > 0) {
 				// cas ou il reste des fils non developpe on choisit parmi ceux la
-				eCourant = e.choixEtatNonVisite(jc);
+				eCourant = e.choixEtatNonVisite(j2);
 			} else if ( e.getListSucc().size() == 0) {
 				// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
-				eCourant = e.choixRandom(jc);
+				eCourant = e.choixRandom(j2);
 			} else {
 				// cas ou tous les noeuds ont ete visite au moins 1 fois 
 				// on choisit le noeud avec la meilleure bvaleur
@@ -84,10 +93,10 @@ public class Puissance4 {
 			if (!eCourant.finJeu() && !eCourant.rempli2()) {
 				if (!eCourant.checkTousVisite() && eCourant.getListSucc().size() > 0) {
 					// cas ou il reste des fils non developpe on choisit parmi ceux la
-					etatchoix = eCourant.choixEtatNonVisite(jc);
+					etatchoix = eCourant.choixEtatNonVisite(j2);
 				} else if ( eCourant.getListSucc().size() == 0) {
 					// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
-					etatchoix = eCourant.choixRandom(jc);
+					etatchoix = eCourant.choixRandom(j2);
 				} 
 			}
 			eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
@@ -98,6 +107,8 @@ public class Puissance4 {
 		return efinal; 
 	}
 
+	
+	
 	public static void affiche(EtatP4 e) {
 		if (e.getListSucc().size() == 0) {
 			e.affichage();
