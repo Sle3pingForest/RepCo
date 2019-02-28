@@ -112,7 +112,7 @@ public abstract class Etat {
 		
 		int nbVictoire =0;
 		for (double i : recompense) {
-			System.out.println(i);
+			//System.out.println(i);
 			if (i == 1) nbVictoire++;
 		}
 		//System.out.println( nbVictoire + "   " + getNbSimu() + " dddddddddddddddddddddddd");

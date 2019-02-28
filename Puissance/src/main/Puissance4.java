@@ -83,19 +83,18 @@ public class Puissance4 {
 					eCourant = efils;
 				}
 			}
+
+			EtatP4 etatchoix = eCourant;
 			if (!eCourant.finJeu() && !eCourant.rempli2()) {
-				EtatP4 etatchoix = null;
 				if (!eCourant.checkTousVisite() && eCourant.getListSucc().size() > 0) {
 					// cas ou il reste des fils non developpe on choisit parmi ceux la
 					etatchoix = eCourant.choixEtatNonVisite(jc);
 				} else if ( eCourant.getListSucc().size() == 0) {
 					// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
 					etatchoix = eCourant.choixRandom(jc);
-				} else {
-					etatchoix = eCourant.choixNoeudMax();
-				}
-				eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
+				} 
 			}
+			eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
 		}
 		EtatP4 efinal = e.choixNoeudMax();
 		java.text.DecimalFormat df = new java.text.DecimalFormat("###.##");
