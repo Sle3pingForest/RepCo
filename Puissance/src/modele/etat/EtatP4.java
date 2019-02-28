@@ -424,6 +424,17 @@ public class EtatP4 extends Etat {
 
 	}
 
+	public static boolean isInteger(String s) {
+	    try { 
+	        Integer.parseInt(s); 
+	    } catch(NumberFormatException e) { 
+	        return false; 
+	    } catch(NullPointerException e) {
+	        return false;
+	    }
+	    // only got here if we didn't return false
+	    return true;
+	}
 
 
 	@Override
@@ -437,11 +448,14 @@ public class EtatP4 extends Etat {
 		while(!valide){	
 			int k = 0;
 			if(!j.getNom().equals("IA")){
-				System.out.print("Choisissez la colonne ou poser le pion: ");
+				System.out.print("Choisissez la colonne ou poser le pion (1 a 7) : ");
 				Scanner sc = new Scanner(System.in);
+				/*String oui = sc.nextLine();
+				while (!EtatP4.isInteger(sc.nextLine()) || Integer.parseInt(sc.nextLine()) > 7 || Integer.parseInt(sc.nextLine()) < 1 ) {
+					System.err.println("chiffre pas bon doit etre entre 1 et 7");
+					oui = sc.nextLine();
+				}*/
 				indiceColone = sc.nextInt();
-
-
 				if(0 < indiceColone && indiceColone < 8 ){
 					indiceColone = indiceColone - 1;
 					valide = true;
@@ -453,7 +467,7 @@ public class EtatP4 extends Etat {
 						this.plateau[3][indiceColone] != 0 && 
 						this.plateau[4][indiceColone] != 0 &&
 						this.plateau[5][indiceColone] != 0){
-					System.out.println("full " +  indiceColone);
+					System.out.println("La ligne " +  indiceColone + " est remplie");
 					valide = false;
 				} 
 			} else {
@@ -537,9 +551,9 @@ public class EtatP4 extends Etat {
 			if(!e.getJcourant().getNom().equals("IA")){
 				return 0;
 			}
-			if(rempli()){return 0.5;}
+			if(rempli()){return 0;}
 		}
-		return 0.5;
+		return 0;
 		/*
 		if(c == 0){
 			

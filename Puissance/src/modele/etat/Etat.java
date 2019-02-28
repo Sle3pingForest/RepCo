@@ -82,9 +82,11 @@ public abstract class Etat {
 	}
 	
 	public double bValeur() {
-		if (getNbSimu() == 0 || parent == null) return 0.5;
-		double bValeur = moyenne() + c * Math.sqrt( Math.log(parent.getNbSimu()) / getNbSimu());
-		if (!getMax()) return -bValeur;
+		if (getNbSimu() == 0 || parent == null) return 0;
+		double moy = moyenne();
+		if (!getMax()) moy = -moy;
+		double bValeur = moy + c * Math.sqrt( Math.log(parent.getNbSimu()) / getNbSimu());
+		
 		return bValeur;
 	}
 	
@@ -112,11 +114,11 @@ public abstract class Etat {
 		
 		int nbVictoire =0;
 		for (double i : recompense) {
-			//System.out.println(i);
-			if (i == 1) nbVictoire++;
+			System.out.println(i);
+			if (i == 1.0) nbVictoire++;
 		}
-		//System.out.println( nbVictoire + "   " + getNbSimu() + " dddddddddddddddddddddddd");
-		return ((double)nbVictoire/nbSimu) * 100;
+		System.out.println( nbVictoire + "   " + getNbSimu() + " dddddddddddddddddddddddd");
+		return ((double)nbVictoire/getNbSimu()) * 100;
 	}
 	
 	

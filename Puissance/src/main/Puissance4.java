@@ -53,11 +53,13 @@ public class Puissance4 {
 
 	public static EtatP4 selection (EtatP4 e, Joueur j1, Joueur j2, Joueur jc)  {
 
+
+		e.setMax(false);
 		e.createSuccesseur();
 		long debut = System.currentTimeMillis();
 		
-		// temps pendant lequel lalgo cherche dans larbre : 5 secondes
-		long tempsRecherche = 5000;
+		// temps pendant lequel lalgo cherche dans larbre en millieme de seconde
+		long tempsRecherche = 3000;
 		
 		while (System.currentTimeMillis() <  (long)(debut + tempsRecherche) ) {
 
@@ -92,7 +94,7 @@ public class Puissance4 {
 		}
 		EtatP4 efinal = e.choixNoeudMax();
 		java.text.DecimalFormat df = new java.text.DecimalFormat("###.##");
-		System.out.println("TAUX : " + df.format(efinal.tauxVictoire()) + "%  NOMBRE SIMULATION : " + efinal.getNbSimu() + "   bValeur : " + efinal.bValeur() );
+		System.out.println("TAUX : " + df.format(efinal.tauxVictoire()) + "%  NOMBRE SIMULATION : " + efinal.getNbSimu() + "   bValeur : " + efinal.bValeur()  + "   " + efinal.getJcourant().getNom());
 		return efinal; 
 	}
 
