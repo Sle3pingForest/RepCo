@@ -25,8 +25,6 @@ public class Puissance4 {
 		//e.setMax(false);
 		//int nb = 0;
 
-
-
 		boolean estRemplie = e.rempli();
 		while(!estRemplie){
 			estRemplie = e.finJeu();
@@ -40,14 +38,9 @@ public class Puissance4 {
 				e.poserJetton(j.getJ2(),j);
 				e.affichage();
 			}
-
-
 		}
-
 		System.out.println(e.getGagant().getNom() + " a win");
 		System.out.println("end game");
-
-
 	}
 
 
@@ -119,13 +112,10 @@ public class Puissance4 {
 			e.affichage();
 			System.out.println(e.getJcourant().getNom() + "    " + e.getMax());
 			System.out.println();
-
 		} else {
-
 			EtatP4 meilleur = e.choixNoeudMax();
 			affiche(meilleur);
 		}
-
 	}
 
 	public static void main(String[] args){
