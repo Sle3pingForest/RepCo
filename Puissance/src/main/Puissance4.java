@@ -42,7 +42,6 @@ public class Puissance4 {
 				ss = scc.next();
 			}
 		}
-		System.out.println(tempsRecherche);
 		boolean estRemplie = e.rempli();
 		while(!estRemplie){
 			estRemplie = e.finJeu();
@@ -63,64 +62,76 @@ public class Puissance4 {
 
 
 	public static EtatP4 selection (EtatP4 e, Joueur j1, Joueur j2, Joueur jc)  {
-
+		
+		Joueur jcc = (jc.getNom() == j1.getNom() ) ? j2 : j1;
+		e.setJcourant(jcc);
+		
 		e.setMax(false);
-		e.createSuccesseur();
+		if (!e.finJeu() && !e.rempli2()) e.createSuccesseur();
 		long debut = System.currentTimeMillis();
 
-		// temps pendant lequel lalgo cherche dans larbre en millieme de seconde
-		long tempsRecherche = 3000;
 
-		while (System.currentTimeMillis() <  (long)(debut + tempsRecherche) ) {
-
-			EtatP4 eCourant = null;
+		while (System.currentTimeMillis() <  (long)(debut + Puissance4.tempsRecherche) ) {
 			
-			 if (!e.finJeu()) {
-				// Q3 : si on a un noeud fils gagnant on le choisit
-				for (EtatP4 ee : e.getListSucc()) {
-					if (ee.finJeu() && ee.getMax()) {
-						eCourant = ee; 
-					}
-				}
-				if (eCourant == null) {
-					// FIN Q3 sinon on fait selon mcts
-					
-					if (!e.checkTousVisite() && e.getListSucc().size() > 0) {
-						// cas ou il reste des fils non developpe on choisit parmi ceux la
-						eCourant = e.choixEtatNonVisite(jc);
-					} else if ( e.getListSucc().size() == 0) {
-						// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
-						eCourant = e.choixRandom(jc);
-					} else {
-						// cas ou tous les noeuds ont ete visite au moins 1 fois 
-						// on choisit le noeud avec la meilleure bvaleur
-						eCourant = e;
-						while (eCourant.checkTousVisite() &&  !eCourant.finJeu() && !eCourant.rempli2()) {
-							EtatP4 efils = eCourant.choixNoeudMax();
-							eCourant = efils;
-						}
-					}
-				}
-			} else {
-				eCourant = e;
-			}
-			EtatP4 etatchoix = eCourant;
-			if (!eCourant.finJeu() && !eCourant.rempli2()) {
-				if (!eCourant.checkTousVisite() && eCourant.getListSucc().size() > 0) {
-					// cas ou il reste des fils non developpe on choisit parmi ceux la
-					etatchoix = eCourant.choixEtatNonVisite(jc);
-				} else if ( eCourant.getListSucc().size() == 0) {
-					// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
-					etatchoix = eCourant.choixRandom(jc);
-				} 
-			}
-			eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
+			EtatP4 gagne = developper(e, jcc);
+			jcc = (jcc.getNom() == j1.getNom() ) ? j2 : j1;
+			EtatP4 contre = developper(e, jcc);
+			
+			EtatP4 etatchoix = gagne;
+			if (contre.finJeu()) etatchoix = contre;
+			
+			etatchoix.marcheAleatoire(j1, j2, jc);
 		}
 		EtatP4 efinal = e.choixNoeudMax();
-		
 		java.text.DecimalFormat df = new java.text.DecimalFormat("###.##");
 		System.out.println("TAUX : " + df.format(efinal.tauxVictoire()) + "%  NOMBRE SIMULATION : " + efinal.getNbSimu() + "   bValeur : " + efinal.bValeur()  + "   " + efinal.getJcourant().getNom());
 		return efinal; 
+	}
+	
+	public static EtatP4 developper (EtatP4 e, Joueur jc) {
+		
+		EtatP4 eCourant = null;
+		
+		 if (!e.finJeu()) {
+			// Q3 : si on a un noeud fils gagnant on le choisit
+			for (EtatP4 ee : e.getListSucc()) {
+				if (ee.finJeu() && ee.getMax()) {
+					eCourant = ee; 
+				}
+			}
+			if (eCourant == null) {
+				// FIN Q3 sinon on fait selon mcts
+				
+				if (!e.checkTousVisite() && e.getListSucc().size() > 0) {
+					// cas ou il reste des fils non developpe on choisit parmi ceux la
+					eCourant = e.choixEtatNonVisite(jc);
+				} else if ( e.getListSucc().size() == 0) {
+					// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
+					eCourant = e.choixRandom(jc);
+				} else {
+					// cas ou tous les noeuds ont ete visite au moins 1 fois 
+					// on choisit le noeud avec la meilleure bvaleur
+					eCourant = e;
+					while (eCourant.checkTousVisite() &&  !eCourant.finJeu() && !eCourant.rempli2()) {
+						EtatP4 efils = eCourant.choixNoeudMax();
+						eCourant = efils;
+					}
+				}
+			}
+		} else {
+			eCourant = e;
+		}
+		EtatP4 etatchoix = eCourant;
+		if (!eCourant.finJeu() && !eCourant.rempli2()) {
+			if (!eCourant.checkTousVisite() && eCourant.getListSucc().size() > 0) {
+				// cas ou il reste des fils non developpe on choisit parmi ceux la
+				etatchoix = eCourant.choixEtatNonVisite(jc);
+			} else if ( eCourant.getListSucc().size() == 0) {
+				// cas ou aucun fils n a ete developpe on en choisit 1 au hasard
+				etatchoix = eCourant.choixRandom(jc);
+			} 
+		}
+		return etatchoix;
 	}
 
 

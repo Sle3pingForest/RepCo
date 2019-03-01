@@ -139,12 +139,11 @@ public class EtatP4 extends Etat {
 	}
 
 
-	public double marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
+	public void marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
 		if (this.finJeu() || this.rempli2()) {
 			double score = this.evaluation(0, this);
-			this.recompense.add(score);
 			this.incremente();
-			return score;
+			this.addRecompense(score);
 		}
 		else {
 			if (jc.getNom() == j1.getNom() )  jc = j2;
@@ -156,19 +155,9 @@ public class EtatP4 extends Etat {
 				if (e.finJeu() && e.getMax()) etat = e;
 			}
 			if (etat == null) etat = choixRandom(jc); 
-			/*System.out.println();
-			etat.affichage();
-			System.out.println(etat.getMax() + "  " + etat.getJcourant().getNom());
-			if (etat.finJeu() ) System.out.println(" FIN MARCHE  FIN JEU ");
-			if (etat.rempli2()) System.out.println(" FIN MARCHE  REMPLI");*/
-			return  etat.marcheAleatoire(j1, j2, jc);
+			etat.marcheAleatoire(j1, j2, jc);
 		}
 	}
-
-
-
-	//////////////////////////        PARTIE L3                   //////////////////////////////////////////////////////////////
-
 
 	public EtatP4(Jeu j,Joueur jc,Pion p, int [][] tab){
 		super(j);
@@ -188,7 +177,7 @@ public class EtatP4 extends Etat {
 	@Override
 	public boolean finJeu() {
 		boolean fin = false;
-		if(!this.rempli()){
+		if(!this.rempli2()){
 			int j1 = this.getJeu().getJ1().getNum();
 			int j2 = this.getJeu().getJ2().getNum();
 			for(int i = 0; i < this.getPlateau().length; ++i){
