@@ -1,5 +1,6 @@
 package main;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import modele.etat.Etat;
 import modele.etat.EtatP4;
@@ -11,6 +12,7 @@ import modele.joueur.JoueurP4;
 public class Puissance4 {
 
 	protected ArrayList<EtatP4> etatParcouru;
+	public static long tempsRecherche;
 
 	public Puissance4(){
 		etatParcouru = new ArrayList<>();
@@ -24,7 +26,23 @@ public class Puissance4 {
 		EtatP4 e = new EtatP4(j, j.getJ1());
 		//e.setMax(false);
 		//int nb = 0;
-
+		
+		boolean correct = false;
+		System.out.print("Choisissez le temps de calcul de l'IA (echelle: 1000 = 1s)");
+		Scanner scc = new Scanner(System.in);
+		String ss = scc.next();
+		while(!correct){
+			if(e.isInteger(ss)){
+				correct = true;
+				Puissance4.tempsRecherche = Integer.parseInt(ss);
+			}
+			else{
+				System.out.print("Choisissez le temps de calcul de l'IA (echelle: 1000 = 1s)");
+				scc = new Scanner(System.in);
+				ss = scc.next();
+			}
+		}
+		System.out.println(tempsRecherche);
 		boolean estRemplie = e.rempli();
 		while(!estRemplie){
 			estRemplie = e.finJeu();

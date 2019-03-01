@@ -425,6 +425,7 @@ public class EtatP4 extends Etat {
 		boolean valide = false;
 		int indiceColone = 1;
 		EtatP4 etatfavorable = null;
+
 		while(!valide){	
 			int k = 0;
 			if(!j.getNom().equals("IA")){
@@ -561,10 +562,6 @@ public class EtatP4 extends Etat {
 	public void setPlateau(int[][] plateau) {
 		this.plateau = plateau;
 	}
-
-
-	
-
 
 	public void setPion(Pion p){
 		this.pIA = p;
