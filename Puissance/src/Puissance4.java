@@ -114,7 +114,7 @@ public class Puissance4 {
 			} 
 			EtatP4 etatchoix = eCourant.choixRandom(jc);
 			etatchoix.addParent(eCourant);
-			eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
+			//eCourant.addRecompense(etatchoix.marcheAleatoire(j1, j2, jc));
 			eCourant.affichage();
 			System.out.println(eCourant.bValeur());
 			System.out.println(nb);
