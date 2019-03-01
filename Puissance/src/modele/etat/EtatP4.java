@@ -28,7 +28,7 @@ public class EtatP4 extends Etat {
 		this.jcourant = jc;
 		this.plateau = j.getPlateau();
 	}
-	
+
 	public void createSuccesseur() {
 		Joueur jc = jeu.getJ1();
 		if (getJcourant().getNom() == jeu.getJ1().getNom()) jc = jeu.getJ2();
@@ -37,7 +37,7 @@ public class EtatP4 extends Etat {
 			e.addParent(this);
 		}
 	}
-	
+
 
 	public void createSuccesseur(Joueur jc) {
 		listSucc = successeur(this, jc);
@@ -45,7 +45,7 @@ public class EtatP4 extends Etat {
 			e.addParent(this);
 		}
 	}
-	
+
 	public ArrayList<EtatP4> getListSucc() {
 		return listSucc;
 	}
@@ -53,7 +53,7 @@ public class EtatP4 extends Etat {
 	public void setListSucc(ArrayList<EtatP4> listSucc) {
 		this.listSucc = listSucc;
 	}
-	
+
 	public boolean checkTousVisite() {
 		boolean check = true;
 		if (listSucc.size() == 0) check = false;
@@ -64,7 +64,7 @@ public class EtatP4 extends Etat {
 	}
 
 	public EtatP4 choixRandom(Joueur jc) {
-		
+
 		if (this.getListSucc().size() == 0) this.createSuccesseur();
 		//System.out.println("test list " + this.getListSucc());
 		int taille = (this.getListSucc().size()- 1);
@@ -78,16 +78,16 @@ public class EtatP4 extends Etat {
 		//this.getListSucc().get(r).addParent(this);
 		return this.getListSucc().get(r);
 	}
-	
+
 	public EtatP4 choixEtatNonVisite(Joueur jc) {
 		ArrayList<EtatP4> ensembleEtat = new ArrayList<>();
-		
+
 		for (EtatP4 e : listSucc) {
 			if ( e.getVisite() == false) {
 				ensembleEtat.add(e);
 			}
 		}
-		
+
 		int taille = (ensembleEtat.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
 		ensembleEtat.get(r).setVisite(true);
@@ -97,38 +97,37 @@ public class EtatP4 extends Etat {
 		//ensembleEtat.get(r).addParent(this);
 		return ensembleEtat.get(r);
 	}
-	
+
 	/*
 	public EtatP4 choixMaxBValeur() {
-		
+
 		ArrayList<EtatP4> ensembleEtat = successeur(this);		
 		int taille = (ensembleEtat.size()- 1);
 		int r = (int) (Math.random() *  (taille -1)) ;
-		
+
 		return ensembleEtat.get(r);
 	}
-	*/
-	
+	 */
+
 	public EtatP4 choixNoeudMax() {
-		
-		double max = Integer.MIN_VALUE;
-		ArrayList<EtatP4> list = new ArrayList<>();
-		for (EtatP4 et : this.getListSucc()) {
-			if (et.bValeur() == max) list.add(et); 
-			if (et.bValeur() > max ) {
-				max = et.bValeur();
-				list.clear();
-				list.add(et);
-			}
-		}
-		
-		int taille = (list.size()- 1);
-		int r = (int) (Math.random() *  (taille -1)) ;
+
 		EtatP4 eCourant = null;
 		if (!this.finJeu() && !this.rempli2())  {
+			double max = Integer.MIN_VALUE;
+			ArrayList<EtatP4> list = new ArrayList<>();
+			for (EtatP4 et : this.getListSucc()) {
+				if (et.bValeur() == max) list.add(et); 
+				if (et.bValeur() > max ) {
+					max = et.bValeur();
+					list.clear();
+					list.add(et);
+				}
+			}
+			int taille = (list.size()- 1);
+			int r = (int) (Math.random() *  (taille -1)) ;
 			if ( taille < 0 ) {
-			Joueur jc =  (this.getJcourant().getNom() == jeu.getJ1().getNom()) ? jeu.getJ2() : jeu.getJ1(); 
-			eCourant = this.choixRandom(jc);
+				Joueur jc =  (this.getJcourant().getNom() == jeu.getJ1().getNom()) ? jeu.getJ2() : jeu.getJ1(); 
+				eCourant = this.choixRandom(jc);
 			} else { 
 				eCourant = list.get( r );
 				//eCourant.addParent(this);
@@ -138,8 +137,8 @@ public class EtatP4 extends Etat {
 		}
 		return eCourant;
 	}
-	
-	
+
+
 	public double marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
 		if (this.finJeu() || this.rempli2()) {
 			double score = this.evaluation(0, this);
@@ -152,12 +151,11 @@ public class EtatP4 extends Etat {
 			else jc = j1;
 			// si un etat est gagnant on le choisit
 			EtatP4 etat = null;
-			/*if (listSucc.size() == 0) this.createSuccesseur();
+			if (listSucc.size() == 0) this.createSuccesseur();
 			for (EtatP4 e : listSucc) {
 				if (e.finJeu() && e.getMax()) etat = e;
 			}
-			if (etat == null) */
-			etat = choixRandom(jc); 
+			if (etat == null) etat = choixRandom(jc); 
 			/*System.out.println();
 			etat.affichage();
 			System.out.println(etat.getMax() + "  " + etat.getJcourant().getNom());
@@ -166,12 +164,12 @@ public class EtatP4 extends Etat {
 			return  etat.marcheAleatoire(j1, j2, jc);
 		}
 	}
-	
-	
+
+
 
 	//////////////////////////        PARTIE L3                   //////////////////////////////////////////////////////////////
-	
-			
+
+
 	public EtatP4(Jeu j,Joueur jc,Pion p, int [][] tab){
 		super(j);
 		jcourant = jc;
@@ -247,7 +245,7 @@ public class EtatP4 extends Etat {
 					}
 				}
 			}
-			
+
 			// diagonale haute gauche
 			for(int i = this.getPlateau().length - 1; i > 2 ; --i){
 				for(int j = 0; j < this.getPlateau()[0].length -3; ++j){
@@ -289,7 +287,7 @@ public class EtatP4 extends Etat {
 		}
 		return rempli;
 	}
-	
+
 	public boolean rempli2() {
 		boolean rempli = true;
 		for (int i = 0; i < 6; i++) {
@@ -444,16 +442,16 @@ public class EtatP4 extends Etat {
 	}
 
 
-	
-    public boolean isInteger(String string) {
-        try {
-            Integer.valueOf(string);
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-    
+
+	public boolean isInteger(String string) {
+		try {
+			Integer.valueOf(string);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
+	}
+
 	@Override
 	public void poserJetton(Joueur j, Jeu jeu){
 
@@ -468,18 +466,18 @@ public class EtatP4 extends Etat {
 				System.out.print("Choisissez la colonne ou poser le pion (1 a 7) : ");
 				Scanner sc = new Scanner(System.in);
 				String s = sc.next();
-                boolean ok = false;
-                while(!ok){
-                    if(this.isInteger(s)){
-                        ok = true;
-                        indiceColone = Integer.parseInt(s);
-                    }
-                    else{
-                        System.out.print("Choisissez la colonne ou poser le pion (1 a 7) : ");
-                        sc = new Scanner(System.in);
-                        s = sc.next();
-                    }
-                }
+				boolean ok = false;
+				while(!ok){
+					if(this.isInteger(s)){
+						ok = true;
+						indiceColone = Integer.parseInt(s);
+					}
+					else{
+						System.out.print("Choisissez la colonne ou poser le pion (1 a 7) : ");
+						sc = new Scanner(System.in);
+						s = sc.next();
+					}
+				}
 				if(0 < indiceColone && indiceColone < 8 ){
 					indiceColone = indiceColone - 1;
 					valide = true;
@@ -496,7 +494,7 @@ public class EtatP4 extends Etat {
 				} 
 			} else {
 				valide = true;
-				
+
 				etatfavorable = Puissance4.selection(this, jeu.getJ1(), jeu.getJ2(), j);//minimax(new EtatP4(jeu, j),1);
 				indiceColone = etatfavorable.getPion().getPosY();
 			}
@@ -563,7 +561,7 @@ public class EtatP4 extends Etat {
 	 * @return  entier : coup gagant
 	 */
 	public double evaluation(int c, EtatP4 e){
-		
+
 		//System.out.println(" JOUEUR " + e.jcourant.getNom( )+ "  num " + num);
 		int score_max , score_min;
 		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
@@ -577,13 +575,13 @@ public class EtatP4 extends Etat {
 			/*if(!e.getJcourant().getNom().equals("IA")){
 				return 0;
 			}*/
-			
+
 		}
 		if(rempli2()){return 0;}
 		return 0;
 		/*
 		if(c == 0){
-			
+
 			int b = eval0_2(e.getPion());
 			//int b = eval0(e, e.jcourant);
 			//if (e.getPion().getPosY() == 1 ) System.out.println(" PREMIER " +b + " num " + num);
@@ -631,7 +629,7 @@ public class EtatP4 extends Etat {
 			System.out.println(" score min  " + score_min);
 			return score_min;
 		}
-		*/
+		 */
 	}
 
 	public int max(int a, int b ){
@@ -687,13 +685,13 @@ public class EtatP4 extends Etat {
 		if(e.getJcourant().getNom().equals("IA")){
 			score_max = -1000;
 			for(EtatP4 p4 : emsembleEtat){
-				
+
 				if ( jeu.getJ1().getNom().equals("IA")){
 					p4.setJcourant(jeu.getJ2());
 				} else {
 					p4.setJcourant(jeu.getJ1());
 				}
-				
+
 				score_max = max(score_max,evaluationAlphaBeta(c-1,p4, alpha, beta));
 				if(score_max >= beta){
 					return score_max;
@@ -711,7 +709,7 @@ public class EtatP4 extends Etat {
 				} else {
 					p4.setJcourant(jeu.getJ1());
 				}
-				
+
 				score_min = min(score_min,(int)evaluation(c-1, p4));
 				if(score_min <= alpha){
 					return score_min;
@@ -747,12 +745,12 @@ public class EtatP4 extends Etat {
 			int score = (int)evaluation(c, p4);
 			//System.out.println(p4.getJcourant().getNom() + "  PION " + p4.getPion().getPosY() +  "     y " + p4.getPion().getPosX() + "  score  "+ score);
 			if (c > 0) {
-				
+
 				if(score <= score_max){
 
 					//System.out.println(" wallah " + score_max);
 					e_sortie = p4;
-					
+
 					if (score < score_max) {
 						ensembleEtatAlea.clear();
 						ensembleEtatAlea.add(e_sortie);
@@ -766,20 +764,20 @@ public class EtatP4 extends Etat {
 			} else if(score >= score_max){
 
 				e_sortie = p4;
-				
+
 				if (score > score_max) {
 					ensembleEtatAlea.clear();
 					ensembleEtatAlea.add(e_sortie);
 				} else {
 					ensembleEtatAlea.add(e_sortie);
 				}
-				
+
 				score_max = score ;
 
 
 			}
 		}
-		
+
 		int t = ensembleEtatAlea.size();
 		//System.out.println( "taile " + t);
 		t--;
@@ -788,7 +786,7 @@ public class EtatP4 extends Etat {
 			//System.out.println( " rand  " + rand);
 			e_sortie = ensembleEtatAlea.get(rand);
 		}
-		
+
 		return e_sortie;
 	}
 
@@ -804,18 +802,18 @@ public class EtatP4 extends Etat {
 			JoueurP4 jj = (JoueurP4) jeu.getJ1();
 			if (e.getJcourant() == jeu.getJ1()) jj = (JoueurP4) jeu.getJ2();
 			p4.setJcourant(jj);
-			
+
 			int score = evaluationAlphaBeta(c, p4,alpha,beta);
 			if(score > score_max){
 				e_sortie = p4;
-				
+
 				if (score > score_max) {
 					ensembleEtatAlea.clear();
 					ensembleEtatAlea.add(e_sortie);
 				} else {
 					ensembleEtatAlea.add(e_sortie);
 				}
-				
+
 				score_max = score ;
 			}
 		}
@@ -1095,7 +1093,7 @@ public class EtatP4 extends Etat {
 			}
 		}
 		//if (p.getPosY() == 1) System.out.println( " MON SCORE  " + score  + " score adv   " + scoreadverse);
-		
+
 		return score - scoreadverse;
 
 
@@ -1219,7 +1217,7 @@ public class EtatP4 extends Etat {
 				nb++;
 			}
 
-/*if (p.getPosY() == 1 && !ligne) {
+			/*if (p.getPosY() == 1 && !ligne) {
 			for (int lk =0; lk < 4; lk++) {
 				System.out.println(tab[lk] +  "  k " + lk);
 			}
@@ -1254,7 +1252,7 @@ public class EtatP4 extends Etat {
 
 				}else if (pionadverse == 1) score += 5; // on se place a proximite a distance 4 max dun pion adverse
 				else score += 1; // place un pion sans pion adverse alentour
-				
+
 				break;
 
 			case 1:
