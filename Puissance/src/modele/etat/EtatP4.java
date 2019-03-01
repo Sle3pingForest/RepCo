@@ -66,16 +66,13 @@ public class EtatP4 extends Etat {
 	public EtatP4 choixRandom(Joueur jc) {
 
 		if (this.getListSucc().size() == 0) this.createSuccesseur();
-		//System.out.println("test list " + this.getListSucc());
 		int taille = (this.getListSucc().size()- 1);
-		int r = (int) (Math.random() *  (taille -1)) ;
-		//this.getListSucc().get(r).setJcourant(jc);
+		int r = (int) (Math.random() *  (taille)) ;
 		if (this.getListSucc().get(r).getVisite() == false) {
 			this.getListSucc().get(r).setVisite(true);
 			this.augmenterNbVisite();
 		}
 		jc.augmenterCoup();
-		//this.getListSucc().get(r).addParent(this);
 		return this.getListSucc().get(r);
 	}
 
@@ -89,25 +86,12 @@ public class EtatP4 extends Etat {
 		}
 
 		int taille = (ensembleEtat.size()- 1);
-		int r = (int) (Math.random() *  (taille -1)) ;
+		int r = (int) (Math.random() *  (taille)) ;
 		ensembleEtat.get(r).setVisite(true);
-		//ensembleEtat.get(r).setJcourant(jc);
 		this.augmenterNbVisite();
 		this.getJcourant().augmenterCoup();
-		//ensembleEtat.get(r).addParent(this);
 		return ensembleEtat.get(r);
 	}
-
-	/*
-	public EtatP4 choixMaxBValeur() {
-
-		ArrayList<EtatP4> ensembleEtat = successeur(this);		
-		int taille = (ensembleEtat.size()- 1);
-		int r = (int) (Math.random() *  (taille -1)) ;
-
-		return ensembleEtat.get(r);
-	}
-	 */
 
 	public EtatP4 choixNoeudMax() {
 
@@ -124,13 +108,40 @@ public class EtatP4 extends Etat {
 				}
 			}
 			int taille = (list.size()- 1);
-			int r = (int) (Math.random() *  (taille -1)) ;
+			int r = (int) (Math.random() *  (taille)) ;
 			if ( taille < 0 ) {
 				Joueur jc =  (this.getJcourant().getNom() == jeu.getJ1().getNom()) ? jeu.getJ2() : jeu.getJ1(); 
 				eCourant = this.choixRandom(jc);
 			} else { 
-				eCourant = list.get( r );
-				//eCourant.addParent(this);
+				eCourant = list.get(r);
+			}
+		} else {
+			eCourant = this;
+		}
+		return eCourant;
+	}
+	
+	public EtatP4 choixBestMoy() {
+
+		EtatP4 eCourant = null;
+		if (!this.finJeu() && !this.rempli2())  {
+			double max = Integer.MIN_VALUE;
+			ArrayList<EtatP4> list = new ArrayList<>();
+			for (EtatP4 et : this.getListSucc()) {
+				if (et.calculMoy() == max) list.add(et); 
+				if (et.calculMoy() > max ) {
+					max = et.calculMoy();
+					list.clear();
+					list.add(et);
+				}
+			}
+			int taille = (list.size()- 1);
+			int r = (int) (Math.random() *  (taille)) ;
+			if ( taille < 0 ) {
+				Joueur jc =  (this.getJcourant().getNom() == jeu.getJ1().getNom()) ? jeu.getJ2() : jeu.getJ1(); 
+				eCourant = this.choixRandom(jc);
+			} else { 
+				eCourant = list.get(r);
 			}
 		} else {
 			eCourant = this;
@@ -142,10 +153,8 @@ public class EtatP4 extends Etat {
 	public void marcheAleatoire(Joueur j1, Joueur j2, Joueur jc) {
 		if (this.finJeu() || this.rempli2()) {
 			double score = this.evaluation(0, this);
-			this.incremente();
 			this.addRecompense(score);
-		}
-		else {
+		} else {
 			if (jc.getNom() == j1.getNom() )  jc = j2;
 			else jc = j1;
 			// si un etat est gagnant on le choisit
@@ -180,6 +189,8 @@ public class EtatP4 extends Etat {
 		if(!this.rempli2()){
 			int j1 = this.getJeu().getJ1().getNum();
 			int j2 = this.getJeu().getJ2().getNum();
+
+			// horizontal
 			for(int i = 0; i < this.getPlateau().length; ++i){
 				for(int j = 0; j < this.getPlateau()[0].length-3; ++j){
 					if(this.getPlateau()[i][j] == j1
@@ -197,6 +208,7 @@ public class EtatP4 extends Etat {
 					}
 				}
 			}
+			// vertical
 			for(int i = 0; i < this.getPlateau()[0].length ; ++i){
 				for(int j = 0; j < this.getPlateau().length - 3; ++j){
 					if(this.getPlateau()[j][i] == j1
@@ -264,6 +276,39 @@ public class EtatP4 extends Etat {
 		}
 		return fin;
 	}
+	
+	public void reset() {
+		recompense = new ArrayList<>();
+		recom = 0;
+		nbSimu = 0;
+		parent = null;
+		nbVisite = 0;
+	}
+	
+	/**
+	 * fonction evaluation
+	 * @param c = entier qui indique le nombre de coup dans le futur
+	 * 		  e = etat
+	 * @return  entier : coup gagant
+	 */
+	public double evaluation(int c, EtatP4 e){
+
+		int score_max , score_min;
+		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
+		int score = 0;
+		if(e.finJeu()){
+			if(e.getMax()){
+				return 1.0;
+			} else {
+				return 0.;
+			}
+
+		}
+		if(rempli2()){return 0.;}
+		return 0.;
+	}
+	
+	
 
 	public boolean rempli() {
 		boolean rempli = false;
@@ -281,7 +326,7 @@ public class EtatP4 extends Etat {
 		boolean rempli = true;
 		for (int i = 0; i < 6; i++) {
 			for (int j = 0; j < 7; j++) {
-				if (plateau[i][j] == 0)rempli = false;
+				if (plateau[i][j] == 0) rempli = false;
 			}	
 		}
 		return rempli;
@@ -496,32 +541,7 @@ public class EtatP4 extends Etat {
 
 
 
-	/**
-	 * fonction evaluation
-	 * @param c = entier qui indique le nombre de coup dans le futur
-	 * 		  e = etat
-	 * @return  entier : coup gagant
-	 */
-	public double evaluation(int c, EtatP4 e){
-
-		//System.out.println(" JOUEUR " + e.jcourant.getNom( )+ "  num " + num);
-		int score_max , score_min;
-		ArrayList<EtatP4> emsembleEtat = new ArrayList<>();
-		int score = 0;
-		if(e.finJeu()){
-			if(e.getMax()/*e.getJcourant().getNom().equals("IA")*/){
-				return 1.0;
-			} else {
-				return 0;
-			}
-			/*if(!e.getJcourant().getNom().equals("IA")){
-				return 0;
-			}*/
-
-		}
-		if(rempli2()){return 0;}
-		return 0;
-	}
+	
 
 	public int max(int a, int b ){
 		if(a >= b) return a;

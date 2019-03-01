@@ -11,6 +11,7 @@ public abstract class Etat {
 	protected Jeu jeu;
 	protected Joueur jcourant;
 	protected ArrayList<Double> recompense;
+	protected double recom;
 	protected int nbSimu;
 	public final static double c = Math.sqrt(2);
 	protected Etat parent;
@@ -56,15 +57,14 @@ public abstract class Etat {
 		return max;
 	}
 	public void addRecompense(double r) {
-		recompense.add(r);
-		nbSimu++;
+		//recompense.add(r);
+		addRec(r);
+		incremente();
 		if (parent != null) {
 			parent.addRecompense(r);
 		}
 	}
-	public void incremente() {
-		nbSimu++;
-	}
+	
 	public int getNbSimu() {
 		return recompense.size();
 	}
@@ -83,10 +83,10 @@ public abstract class Etat {
 	}
 	
 	public double bValeur() {
-		if (getNbSimu() == 0 || parent == null) return 0;
-		double moy = moyenne();
+		if (getNSimu() == 0 || parent == null) return 0;
+		double moy = calculMoy();
 		if (!getMax()) moy = -moy;
-		double bValeur = moy + c * Math.sqrt( Math.log(parent.getNbSimu()) / getNbSimu());
+		double bValeur = moy + c * Math.sqrt( Math.log(parent.getNSimu()) / getNSimu());
 		
 		return bValeur;
 	}
@@ -110,6 +110,23 @@ public abstract class Etat {
 	public void augmenterNbVisite() {
 		this.nbVisite += 1;
 	}
+	
+	public void addRec(double r) {
+		this.recom += r;
+	}
+	public double getRec() {
+		return recom;
+	}
+	public double calculMoy() {
+		return recom/nbSimu;
+	}
+	public int getNSimu() {
+		return nbSimu;
+	}
+	public void incremente() {
+		nbSimu++;
+	}
+	
 	
 	public double tauxVictoire() {
 		
